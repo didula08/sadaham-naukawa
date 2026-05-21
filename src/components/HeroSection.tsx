@@ -83,11 +83,11 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.1, ease: "easeOut" }}
-            className="flex items-center gap-3 mb-6 text-[#D4AF37]/90"
+            className="flex items-center justify-center gap-2 md:gap-3 mb-6 text-[#D4AF37]/90 px-4"
           >
-            <span className="text-xl md:text-2xl drop-shadow-md">🪷</span>
-            <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-medium">නමෝ තස්ස භගවතෝ අරහතෝ සම්මා සම්බුද්ධස්ස</p>
-            <span className="text-xl md:text-2xl drop-shadow-md">🪷</span>
+            <span className="text-lg md:text-2xl drop-shadow-md flex-shrink-0">🪷</span>
+            <p className="text-xs md:text-sm tracking-normal sm:tracking-[0.2em] uppercase font-medium text-center leading-relaxed">නමෝ තස්ස භගවතෝ අරහතෝ සම්මා සම්බුද්ධස්ස</p>
+            <span className="text-lg md:text-2xl drop-shadow-md flex-shrink-0">🪷</span>
           </motion.div>
 
           <motion.div

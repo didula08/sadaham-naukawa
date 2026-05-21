@@ -90,7 +90,7 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
   const isShorts = lantern.videoUrl.includes('shorts') || lantern.videoUrl.includes('/shorts/');
   
   return (
-    <div className="h-screen bg-[#060507] text-white overflow-hidden relative flex flex-col justify-between pb-2">
+    <div className="min-h-screen bg-[#060507] text-white overflow-y-auto md:h-screen md:overflow-hidden relative flex flex-col justify-between pb-2">
       
       {/* Dynamic Embedded CSS Styles */}
       <style jsx global>{`
@@ -173,7 +173,7 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
       </div>
 
       {/* Main Container */}
-      <div className="w-full max-w-[92%] mx-auto px-4 py-3 relative z-10 flex-grow flex flex-col justify-center overflow-hidden">
+      <div className="w-full max-w-[92%] mx-auto px-4 py-3 relative z-10 flex-grow flex flex-col justify-center overflow-visible md:overflow-hidden">
         
         {/* Header Navigation */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mb-3 flex-shrink-0">
@@ -186,36 +186,36 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
           </button>
 
           {/* Next & Previous Navigation */}
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-center">
+          <div className="flex items-center gap-1.5 sm:gap-3 w-full sm:w-auto justify-center">
             {prevLantern ? (
               <a
                 href={`/lantern/${prevLantern.id}`}
-                className="px-4 py-2 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/40 hover:bg-[#D4AF37]/30 text-[#FFD700] hover:text-white transition-all flex items-center gap-2 text-sm backdrop-blur-md font-bold hover:shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+                className="px-2.5 sm:px-4 py-2 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/40 hover:bg-[#D4AF37]/30 text-[#FFD700] hover:text-white transition-all flex items-center gap-1 sm:gap-2 text-xs sm:text-sm backdrop-blur-md font-bold hover:shadow-[0_0_15px_rgba(212,175,55,0.3)]"
                 title={`Previous: ${prevLantern.title}`}
               >
-                <ChevronLeft className="w-4 h-4" />
-                <span>කලින් එක (Prev)</span>
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>කලින් (Prev)</span>
               </a>
             ) : (
-              <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 text-sm select-none font-bold cursor-not-allowed flex items-center gap-2">
-                <ChevronLeft className="w-4 h-4" />
-                <span>කලින් එක (Prev)</span>
+              <div className="px-2.5 sm:px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 text-xs sm:text-sm select-none font-bold cursor-not-allowed flex items-center gap-1 sm:gap-2">
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>කලින් (Prev)</span>
               </div>
             )}
 
             {nextLantern ? (
               <a
                 href={`/lantern/${nextLantern.id}`}
-                className="px-4 py-2 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/40 hover:bg-[#D4AF37]/30 text-[#FFD700] hover:text-white transition-all flex items-center gap-2 text-sm backdrop-blur-md font-bold hover:shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+                className="px-2.5 sm:px-4 py-2 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/40 hover:bg-[#D4AF37]/30 text-[#FFD700] hover:text-white transition-all flex items-center gap-1 sm:gap-2 text-xs sm:text-sm backdrop-blur-md font-bold hover:shadow-[0_0_15px_rgba(212,175,55,0.3)]"
                 title={`Next: ${nextLantern.title}`}
               >
-                <span>ඊළඟ එක (Next)</span>
-                <ChevronRight className="w-4 h-4" />
+                <span>ඊළඟ (Next)</span>
+                <ChevronRight className="w-3.5 h-3.5" />
               </a>
             ) : (
-              <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 text-sm select-none font-bold cursor-not-allowed flex items-center gap-2">
-                <span>ඊළඟ එක (Next)</span>
-                <ChevronRight className="w-4 h-4" />
+              <div className="px-2.5 sm:px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 text-xs sm:text-sm select-none font-bold cursor-not-allowed flex items-center gap-1 sm:gap-2">
+                <span>ඊළඟ (Next)</span>
+                <ChevronRight className="w-3.5 h-3.5" />
               </div>
             )}
           </div>
@@ -239,13 +239,13 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
         </div>
 
         {/* Dynamic Layout - 50/50 Split on Desktop */}
-        <div className="flex flex-col md:flex-row gap-6 lg:gap-8 mt-2 items-center md:items-stretch justify-center flex-grow overflow-hidden max-h-[calc(100vh-180px)]">
+        <div className="flex flex-col md:flex-row gap-6 lg:gap-8 mt-2 items-center md:items-stretch justify-center flex-grow overflow-visible md:overflow-hidden md:max-h-[calc(100vh-140px)]">
           
           {/* VIDEO BOX (Left/Top) - Takes half the screen width */}
-          <div className="w-full md:w-1/2 flex justify-center items-center h-full overflow-hidden">
+          <div className="w-full md:w-1/2 flex justify-center items-center h-auto md:h-full overflow-visible md:overflow-hidden">
             <div 
               className={`bg-black/40 rounded-3xl overflow-hidden border border-[#D4AF37]/30 shadow-2xl relative ${
-                isShorts ? 'h-full max-h-[calc(100vh-210px)] aspect-[9/16] shadow-[#D4AF37]/5' : 'w-full aspect-video shadow-[#D4AF37]/10'
+                isShorts ? 'h-[50vh] md:h-full max-h-[500px] md:max-h-[calc(100vh-210px)] aspect-[9/16] shadow-[#D4AF37]/5' : 'w-full aspect-video shadow-[#D4AF37]/10'
               } backdrop-blur-sm`}
             >
               <YouTubePlayer
@@ -258,7 +258,7 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
           </div>
 
           {/* INFORMATION & INTERACTION PANEL (Right/Bottom) - Takes other half the screen width */}
-          <div className="w-full md:w-1/2 flex flex-col justify-center gap-4 h-full overflow-hidden">
+          <div className="w-full md:w-1/2 flex flex-col justify-start md:justify-center gap-4 h-auto md:h-full md:overflow-y-auto pr-0 md:pr-2 pb-6 md:pb-0">
             
             {/* Title & Info Card */}
             <div className="bg-black/40 border border-white/5 rounded-3xl p-5 lg:p-6 backdrop-blur-md relative overflow-hidden flex-shrink-0">

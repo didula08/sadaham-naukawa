@@ -93,7 +93,7 @@ export default function LeaderboardSection({ topLanterns }: LeaderboardSectionPr
             <motion.div
               key={item._id}
               onClick={() => handleCardClick(item._id)}
-              className={`w-full sm:w-[85%] md:w-[32%] min-w-[300px] max-w-[420px] flex flex-col justify-between bg-gradient-to-b from-[#110E14]/95 to-[#070509]/95 border-2 rounded-3xl overflow-hidden cursor-pointer backdrop-blur-lg group transition-all duration-500 ${item.config.borderColor} ${item.config.glowClass} ${item.config.scaleClass} ${item.config.orderClass}`}
+              className={`w-full sm:w-[85%] md:w-[32%] min-w-0 sm:min-w-[300px] max-w-[420px] flex flex-col justify-between bg-gradient-to-b from-[#110E14]/95 to-[#070509]/95 border-2 rounded-3xl overflow-hidden cursor-pointer backdrop-blur-lg group transition-all duration-500 ${item.config.borderColor} ${item.config.glowClass} ${item.config.scaleClass} ${item.config.orderClass}`}
               whileHover={{ y: -8 }}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}

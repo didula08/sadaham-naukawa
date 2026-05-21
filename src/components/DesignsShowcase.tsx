@@ -126,7 +126,7 @@ export default function DesignsShowcase({ initialLanterns }: DesignsShowcaseProp
   }, [initialLanterns, searchQuery, filterTab]);
 
   return (
-    <div className="relative py-12 px-6 sm:px-10 rounded-[32px] sm:rounded-[40px] border border-[#D4AF37]/10 bg-gradient-to-b from-[#0D0B0F]/45 to-[#070509]/45 backdrop-blur-sm overflow-hidden space-y-12 shadow-2xl">
+    <div className="relative py-12 px-4 sm:px-10 rounded-[32px] sm:rounded-[40px] border border-[#D4AF37]/10 bg-gradient-to-b from-[#0D0B0F]/45 to-[#070509]/45 backdrop-blur-sm overflow-hidden space-y-12 shadow-2xl">
       {/* Ambient background glows and sparks */}
       <ShowcaseBackground />
 
@@ -245,7 +245,7 @@ export default function DesignsShowcase({ initialLanterns }: DesignsShowcaseProp
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.35 }}
-                className="w-full sm:w-[45%] lg:w-[31%] min-w-[320px] max-w-[460px]"
+                className="w-full sm:w-[45%] lg:w-[31%] min-w-0 sm:min-w-[320px] max-w-[460px]"
               >
                 <LanternCard lantern={lantern} />
               </motion.div>

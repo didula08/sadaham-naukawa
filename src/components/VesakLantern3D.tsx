@@ -213,7 +213,7 @@ function ComplexLantern() {
 
 export default function VesakLantern3D() {
   return (
-    <div className="w-full h-[600px] lg:h-[800px] relative pointer-events-none flex items-center justify-center overflow-visible">
+    <div className="w-full h-[350px] sm:h-[500px] lg:h-[750px] relative pointer-events-none flex items-center justify-center overflow-visible">
       {/* Soft warm oil-lamp glow in the background */}
       <div className="absolute inset-0 bg-[#e65c00]/10 blur-[150px] rounded-full z-0" />
       <div className="absolute inset-0 z-10 pointer-events-auto">

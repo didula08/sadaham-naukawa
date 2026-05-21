@@ -397,103 +397,196 @@ export default function AdminPage() {
                   <p className="text-[#F5F5F7]/40">නිර්මාණ කිසිවක් හමු නොවීය.</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-white/5 text-[#D4AF37] text-xs font-bold uppercase tracking-wider">
-                        <th className="py-3.5 px-4">ක්‍රියාකරු (Creator)</th>
-                        <th className="py-3.5 px-4">නිර්මාණය (Title)</th>
-                        <th className="py-3.5 px-4">දිනය (Date)</th>
-                        <th className="py-3.5 px-4 text-center">මනාප (Reacts)</th>
-                        <th className="py-3.5 px-4 text-center">තත්ත්වය (Status)</th>
-                        <th className="py-3.5 px-4 text-right">ක්‍රියාකාරකම් (Action)</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5 text-sm">
-                      {filteredLanterns.map((lantern) => (
-                        <tr 
-                          key={lantern._id} 
-                          className="hover:bg-white/2 transition-colors cursor-pointer group"
-                          onClick={() => setSelectedLantern(lantern)}
-                        >
-                          <td className="py-4 px-4 font-bold text-white">
-                            <div className="flex items-center gap-2">
-                              {lantern.isWinner && <Trophy className="w-4 h-4 text-[#FFD700] fill-[#FFD700] flex-shrink-0 animate-pulse" />}
-                              <span>{lantern.creatorName}</span>
+                <>
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-white/5 text-[#D4AF37] text-xs font-bold uppercase tracking-wider">
+                          <th className="py-3.5 px-4">ක්‍රියාකරු (Creator)</th>
+                          <th className="py-3.5 px-4">නිර්මාණය (Title)</th>
+                          <th className="py-3.5 px-4">දිනය (Date)</th>
+                          <th className="py-3.5 px-4 text-center">මනාප (Reacts)</th>
+                          <th className="py-3.5 px-4 text-center">තත්ත්වය (Status)</th>
+                          <th className="py-3.5 px-4 text-right">ක්‍රියාකාරකම් (Action)</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5 text-sm">
+                        {filteredLanterns.map((lantern) => (
+                          <tr 
+                            key={lantern._id} 
+                            className="hover:bg-white/2 transition-colors cursor-pointer group"
+                            onClick={() => setSelectedLantern(lantern)}
+                          >
+                            <td className="py-4 px-4 font-bold text-white">
+                              <div className="flex items-center gap-2">
+                                {lantern.isWinner && <Trophy className="w-4 h-4 text-[#FFD700] fill-[#FFD700] flex-shrink-0 animate-pulse" />}
+                                <span>{lantern.creatorName}</span>
+                                {lantern.isApproved && leadingLantern && lantern._id === leadingLantern._id && (
+                                  <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black shadow shadow-[#D4AF37]/35 uppercase tracking-widest animate-pulse" title="වැඩිම මනාප සංඛ්‍යාවක් ලබාගෙන ප්‍රමුඛත්වයේ සිටින නිර්මාණය">
+                                    <Sparkles className="w-2.5 h-2.5 fill-black" />
+                                    <span>Leader</span>
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-[#F5F5F7]/80 max-w-[200px] truncate">{lantern.title}</td>
+                            <td className="py-4 px-4 text-[#F5F5F7]/50 text-xs">
+                              {new Date(lantern.createdAt).toLocaleDateString('si-LK')}
+                            </td>
+                            <td className="py-4 px-4 text-center font-extrabold text-[#FFD700]">
+                              <div className="flex items-center justify-center gap-1.5">
+                                <Heart className="w-4 h-4 fill-[#FFD700] text-[#FFD700] flex-shrink-0" />
+                                <span>{lantern.likeCount}</span>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                              {lantern.isApproved ? (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-green-500/10 text-green-400 border border-green-500/20">
+                                  <CheckCircle className="w-3 h-3" /> Approved
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 animate-pulse">
+                                  <Clock className="w-3 h-3" /> Pending Review
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-4 px-4 text-right" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => setSelectedLantern(lantern)}
+                                  className="p-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-lg transition-colors text-[#D4AF37]"
+                                  title="විස්තර බලන්න"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </button>
+                                
+                                {!lantern.isApproved && (
+                                  <button
+                                    onClick={() => handleApprove(lantern._id)}
+                                    disabled={processingAction}
+                                    className="px-3 py-1.5 bg-green-500 text-black font-bold text-xs rounded-lg hover:shadow-[0_0_10px_rgba(34,197,94,0.4)] transition-all flex items-center gap-1 disabled:opacity-50"
+                                  >
+                                    Approve
+                                  </button>
+                                )}
+
+                                {lantern.isApproved && !lantern.isWinner && (
+                                  <button
+                                    onClick={() => handleSelectWinner(lantern._id)}
+                                    disabled={processingAction}
+                                    className="px-3 py-1.5 bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black font-bold text-xs rounded-lg hover:shadow-[0_0_10px_rgba(255,215,0,0.4)] transition-all flex items-center gap-1 disabled:opacity-50"
+                                  >
+                                    <Trophy className="w-3.5 h-3.5" /> Winner
+                                  </button>
+                                )}
+
+                                <button
+                                  onClick={() => handleReject(lantern._id)}
+                                  disabled={processingAction}
+                                  className="p-2 bg-red-500/10 border border-red-500/20 hover:bg-red-500 hover:text-black rounded-lg transition-all text-red-400"
+                                  title="ප්‍රතික්ෂේප කරන්න"
+                                >
+                                  <XCircle className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile Cards List View */}
+                  <div className="block md:hidden space-y-4">
+                    {filteredLanterns.map((lantern) => (
+                      <div 
+                        key={lantern._id} 
+                        className="bg-black/40 border border-white/5 rounded-2xl p-5 flex flex-col gap-4 relative overflow-hidden cursor-pointer"
+                        onClick={() => setSelectedLantern(lantern)}
+                      >
+                        {/* Top row with name and status */}
+                        <div className="flex justify-between items-start gap-2">
+                          <div className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              {lantern.isWinner && <Trophy className="w-4.5 h-4.5 text-[#FFD700] fill-[#FFD700] flex-shrink-0 animate-pulse" />}
+                              <span className="font-extrabold text-white text-base leading-tight">{lantern.creatorName}</span>
                               {lantern.isApproved && leadingLantern && lantern._id === leadingLantern._id && (
-                                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black shadow shadow-[#D4AF37]/35 uppercase tracking-widest animate-pulse" title="වැඩිම මනාප සංඛ්‍යාවක් ලබාගෙන ප්‍රමුඛත්වයේ සිටින නිර්මාණය">
+                                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black uppercase tracking-widest animate-pulse">
                                   <Sparkles className="w-2.5 h-2.5 fill-black" />
                                   <span>Leader</span>
                                 </span>
                               )}
                             </div>
-                          </td>
-                          <td className="py-4 px-4 text-[#F5F5F7]/80 max-w-[200px] truncate">{lantern.title}</td>
-                          <td className="py-4 px-4 text-[#F5F5F7]/50 text-xs">
-                            {new Date(lantern.createdAt).toLocaleDateString('si-LK')}
-                          </td>
-                          <td className="py-4 px-4 text-center font-extrabold text-[#FFD700]">
-                            <div className="flex items-center justify-center gap-1.5">
-                              <Heart className="w-4 h-4 fill-[#FFD700] text-[#FFD700] flex-shrink-0" />
-                              <span>{lantern.likeCount}</span>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4 text-center">
+                            <p className="text-[10px] text-[#F5F5F7]/40">
+                              {new Date(lantern.createdAt).toLocaleDateString('si-LK')}
+                            </p>
+                          </div>
+                          <div>
                             {lantern.isApproved ? (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-green-500/10 text-green-400 border border-green-500/20">
-                                <CheckCircle className="w-3 h-3" /> Approved
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-green-500/10 text-green-400 border border-green-500/20">
+                                <CheckCircle className="w-2.5 h-2.5" /> Approved
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 animate-pulse">
-                                <Clock className="w-3 h-3" /> Pending Review
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 animate-pulse">
+                                <Clock className="w-2.5 h-2.5" /> Pending
                               </span>
                             )}
-                          </td>
-                          <td className="py-4 px-4 text-right" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-end gap-2">
-                              <button
-                                onClick={() => setSelectedLantern(lantern)}
-                                className="p-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-lg transition-colors text-[#D4AF37]"
-                                title="විස්තර බලන්න"
-                              >
-                                <Eye className="w-4 h-4" />
-                              </button>
-                              
-                              {!lantern.isApproved && (
-                                <button
-                                  onClick={() => handleApprove(lantern._id)}
-                                  disabled={processingAction}
-                                  className="px-3 py-1.5 bg-green-500 text-black font-bold text-xs rounded-lg hover:shadow-[0_0_10px_rgba(34,197,94,0.4)] transition-all flex items-center gap-1 disabled:opacity-50"
-                                >
-                                  Approve
-                                </button>
-                              )}
+                          </div>
+                        </div>
 
-                              {lantern.isApproved && !lantern.isWinner && (
-                                <button
-                                  onClick={() => handleSelectWinner(lantern._id)}
-                                  disabled={processingAction}
-                                  className="px-3 py-1.5 bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black font-bold text-xs rounded-lg hover:shadow-[0_0_10px_rgba(255,215,0,0.4)] transition-all flex items-center gap-1 disabled:opacity-50"
-                                >
-                                  <Trophy className="w-3.5 h-3.5" /> Winner
-                                </button>
-                              )}
+                        {/* Title and Reacts */}
+                        <div className="space-y-1">
+                          <h4 className="text-sm font-bold text-[#D4AF37]/90 line-clamp-1">{lantern.title}</h4>
+                          <div className="flex items-center gap-1.5 text-xs text-[#FFD700] font-black">
+                            <Heart className="w-3.5 h-3.5 fill-[#FFD700] text-[#FFD700]" />
+                            <span>{lantern.likeCount} පහන් (Lamps)</span>
+                          </div>
+                        </div>
 
-                              <button
-                                onClick={() => handleReject(lantern._id)}
-                                disabled={processingAction}
-                                className="p-2 bg-red-500/10 border border-red-500/20 hover:bg-red-500 hover:text-black rounded-lg transition-all text-red-400"
-                                title="ප්‍රතික්ෂේප කරන්න"
-                              >
-                                <XCircle className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                        {/* Actions */}
+                        <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/5" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            onClick={() => setSelectedLantern(lantern)}
+                            className="p-2.5 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl transition-colors text-[#D4AF37]"
+                            title="විස්තර බලන්න"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          
+                          {!lantern.isApproved && (
+                            <button
+                              onClick={() => handleApprove(lantern._id)}
+                              disabled={processingAction}
+                              className="px-4 py-2 bg-green-500 text-black font-extrabold text-xs rounded-xl hover:shadow-[0_0_10px_rgba(34,197,94,0.4)] transition-all flex items-center gap-1 disabled:opacity-50"
+                            >
+                              Approve
+                            </button>
+                          )}
+
+                          {lantern.isApproved && !lantern.isWinner && (
+                            <button
+                              onClick={() => handleSelectWinner(lantern._id)}
+                              disabled={processingAction}
+                              className="px-4 py-2 bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black font-extrabold text-xs rounded-xl hover:shadow-[0_0_10px_rgba(255,215,0,0.4)] transition-all flex items-center gap-1.5 disabled:opacity-50"
+                            >
+                              <Trophy className="w-3.5 h-3.5" /> Winner
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => handleReject(lantern._id)}
+                            disabled={processingAction}
+                            className="p-2.5 bg-red-500/10 border border-red-500/20 hover:bg-red-500 hover:text-black rounded-xl transition-all text-red-400"
+                            title="මකන්න (Reject)"
+                          >
+                            <XCircle className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
 
@@ -578,7 +671,7 @@ export default function AdminPage() {
                             )}
                           </div>
 
-                          <div className="flex gap-2">
+                           <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
                             {!selectedLantern.isApproved ? (
                               <button
                                 onClick={() => handleApprove(selectedLantern._id)}
