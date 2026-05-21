@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --color-vesak-black: #0B0B0C;
+  --color-vesak-gold: #D4AF37;
+  --color-vesak-gold-light: #FFD700;
+  --color-vesak-text: #F5F5F7;
+  --font-sans: 'Noto Sans Sinhala', 'Iskoola Pota', system-ui, sans-serif;
+  
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+:root {
+  --background: var(--color-vesak-black);
+  --foreground: var(--color-vesak-text);
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+.gold-glow {
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4), 0 0 30px rgba(255, 215, 0, 0.2);
+}
+
+.gold-glow-hover:hover {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6), 0 0 40px rgba(255, 215, 0, 0.4);
+}
+
+.gold-text-glow {
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+}
