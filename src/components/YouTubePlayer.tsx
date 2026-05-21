@@ -3,6 +3,12 @@
 
 import { useEffect, useRef } from "react";
 
+declare global {
+  interface Window {
+    YT: any;
+  }
+}
+
 interface YouTubePlayerProps {
   videoId: string | null;
   embedUrl: string;
@@ -32,6 +38,23 @@ export default function YouTubePlayer({
 
     let player: any = null;
     let isDestroyed = false;
+
+    const loadYoutubeAPI = () => {
+      if (window.YT && window.YT.Player) {
+        return;
+      }
+      const existingTag = document.querySelector('script[src="https://www.youtube.com/iframe_api"]');
+      if (!existingTag) {
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName("script")[0];
+        if (firstScriptTag && firstScriptTag.parentNode) {
+          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        } else {
+          document.head.appendChild(tag);
+        }
+      }
+    };
 
     const initPlayer = () => {
       if (isDestroyed || !containerRef.current || !window.YT || !window.YT.Player) return;
@@ -78,6 +101,7 @@ export default function YouTubePlayer({
       }
     };
 
+    loadYoutubeAPI();
     checkAPI();
 
     return () => {

@@ -18,7 +18,6 @@ export async function addLantern(formData: FormData) {
     const bankName = formData.get('bankName') as string;
     const bankBranch = formData.get('bankBranch') as string;
     const bankAccountNumber = formData.get('bankAccountNumber') as string;
-    const receiptFile = formData.get('receipt') as File | null;
 
     if (
       !creatorName ||
@@ -32,20 +31,6 @@ export async function addLantern(formData: FormData) {
     ) {
       return { error: 'සියලුම තොරතුරු ඇතුළත් කරන්න (Please fill all fields)' };
     }
-
-    if (!receiptFile || receiptFile.size === 0) {
-      return { error: 'ගෙවීම් රිසිට්පත ඇමුණුම් කරන්න (Please attach the payment receipt)' };
-    }
-
-    // Validate size (max 4.5MB)
-    if (receiptFile.size > 4.5 * 1024 * 1024) {
-      return { error: 'රූපයේ ප්‍රමාණය 4.5MB ට වඩා අඩු විය යුතුය (Image size must be less than 4.5MB)' };
-    }
-
-    // Convert file to Base64
-    const bytes = await receiptFile.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const receiptImage = `data:${receiptFile.type};base64,${buffer.toString('base64')}`;
 
     // Basic sanitization/extraction for YouTube URLs
     let sanitizedVideoUrl = videoUrl;
@@ -63,7 +48,6 @@ export async function addLantern(formData: FormData) {
       bankName,
       bankBranch,
       bankAccountNumber,
-      receiptImage,
       isApproved: false,
       isWinner: false,
     });

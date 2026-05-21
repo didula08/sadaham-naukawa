@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 declare global {
   interface Window {
@@ -12,6 +13,7 @@ declare global {
 
 export default function BackgroundMusic() {
   const playerRef = useRef<any>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     // Fallback: If autoplay is blocked by the browser, play on first user interaction (any click)
@@ -142,7 +144,10 @@ export default function BackgroundMusic() {
     document.addEventListener("click", handleUserGesturePlay);
     window.addEventListener("pause-bg-music", handlePauseMusicFromEvent);
     window.addEventListener("play-bg-music", handlePlayMusicFromEvent);
-    loadYoutubeAPI();
+
+    if (pathname === "/") {
+      loadYoutubeAPI();
+    }
 
     return () => {
       // Clean up player on unmount / hot-reload to stop the audio immediately
@@ -172,7 +177,7 @@ export default function BackgroundMusic() {
         channel.close();
       }
     };
-  }, []);
+  }, [pathname]);
 
   return (
     <div className="absolute top-0 left-0 w-0 h-0 overflow-hidden pointer-events-none opacity-0 select-none" aria-hidden="true">

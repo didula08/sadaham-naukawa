@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { addLantern } from '@/actions/lanternActions';
-import { X, Loader2, Check, Upload, Image as ImageIcon } from 'lucide-react';
+import { X, Loader2, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SubmissionModalProps {
@@ -15,32 +15,13 @@ export default function SubmissionModal({ isOpen, onClose }: SubmissionModalProp
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [mounted, setMounted] = useState(false);
-  const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 4.5 * 1024 * 1024) {
-        setError('රූපයේ ප්‍රමාණය 4.5MB ට වඩා අඩු විය යුතුය (Image size must be less than 4.5MB)');
-        setReceiptPreview(null);
-        e.target.value = ''; // Reset input
-        return;
-      }
-      setError('');
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setReceiptPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setReceiptPreview(null);
-    }
-  };
+  // Removed file input changes handler
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -61,7 +42,6 @@ export default function SubmissionModal({ isOpen, onClose }: SubmissionModalProp
   const handleClose = () => {
     setIsSuccess(false);
     setError('');
-    setReceiptPreview(null);
     onClose();
   };
 
@@ -96,7 +76,7 @@ export default function SubmissionModal({ isOpen, onClose }: SubmissionModalProp
                 <div className="space-y-2">
                   <h3 className="text-2xl font-bold text-white">සාර්ථකයි! (Submitted!)</h3>
                   <p className="text-[#F5F5F7]/70 text-sm leading-relaxed max-w-md mx-auto">
-                    ඔබගේ නිර්මාණය සාර්ථකව ඇතුළත් කරන ලදී. රුපියල් 300 ක ගෙවීම් රිසිට්පත පරිපාලක (Admin) විසින් පරීක්ෂා කර අනුමත කිරීමෙන් පසු ඔබේ නිර්මාණය වෙබ් අඩවියේ ප්‍රදර්ශනය කෙරේ. ජයග්‍රාහකයාට රුපියල් 10,000 ක මුදලක් පිරිනමනු ලැබේ!
+                    ඔබගේ නිර්මාණය සාර්ථකව ඇතුළත් කරන ලදී. කරුණාකර රුපියල් 300 ක ගෙවීම් රිසිට්පත WhatsApp මඟින් අප වෙත එවීමට කටයුතු කරන්න. පරිපාලක (Admin) විසින් එය පරීක්ෂා කර අනුමත කිරීමෙන් පසු ඔබේ නිර්මාණය වෙබ් අඩවියේ ප්‍රදර්ශනය කෙරේ. ජයග්‍රාහකයාට රුපියල් 10,000 ක මුදලක් පිරිනමනු ලැබේ!
                   </p>
                 </div>
                 <button
@@ -118,7 +98,7 @@ export default function SubmissionModal({ isOpen, onClose }: SubmissionModalProp
                     💰 ඇතුළත් කිරීමේ ගාස්තුව: රු. 300 (Entry Fee: LKR 300)
                   </p>
                   <p className="text-center text-[#F5F5F7]/80">
-                    මෙම තරඟයට නිර්මාණයක් ඇතුළත් කිරීමට රු. 300 ක මුදලක් පහත ගිණුමට බැර කර, එහි රිසිට්පත (Receipt) මෙහි අමුණන්න. (ජයග්‍රාහකයාට රු. 10,000 ක තෑග්ගක් හිමිවේ.)
+                    මෙම තරඟයට නිර්මාණයක් ඇතුළත් කිරීමට රු. 300 ක මුදලක් පහත ගිණුමට බැර කර, එම ගෙවීම් රිසිට්පත WhatsApp මඟින් අප වෙත යොමු කරන්න. (ජයග්‍රාහකයාට රු. 10,000 ක තෑග්ගක් හිමිවේ.)
                   </p>
                   <div className="bg-black/55 p-3 rounded-lg border border-white/5 space-y-1">
                     <p>🏦 <strong className="text-white">බැංකුව (Bank):</strong> ලංකා බැංකුව (Bank of Ceylon)</p>
@@ -180,44 +160,19 @@ export default function SubmissionModal({ isOpen, onClose }: SubmissionModalProp
                     </div>
                   </div>
 
-                  {/* Payment Receipt Upload */}
+                  {/* Payment Receipt Instruction */}
                   <div className="border-b border-white/10 pb-4 mb-4">
-                    <h3 className="text-sm font-bold text-[#D4AF37] uppercase tracking-wider mb-3">2. රිසිට්පත ඇමිණීම (Payment Receipt)</h3>
-                    <div className="flex flex-col sm:flex-row gap-4 items-start">
-                      <div className="w-full sm:flex-1">
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-[#D4AF37]/40 rounded-xl cursor-pointer bg-black/40 hover:bg-[#D4AF37]/5 hover:border-[#D4AF37] transition-all">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
-                            <Upload className="w-8 h-8 text-[#D4AF37] mb-2" />
-                            <p className="text-xs text-[#F5F5F7] font-semibold">රිසිට්පත මෙතැනට ඇද දමන්න හෝ තෝරන්න</p>
-                            <p className="text-[10px] text-[#F5F5F7]/50 mt-1">PNG, JPG, JPEG (Max 4.5MB)</p>
-                          </div>
-                          <input
-                            type="file"
-                            name="receipt"
-                            accept="image/*"
-                            required
-                            onChange={handleFileChange}
-                            className="hidden"
-                          />
-                        </label>
-                      </div>
-                      
-                      {receiptPreview && (
-                        <div className="w-full sm:w-32 h-32 rounded-xl border border-[#D4AF37]/40 overflow-hidden relative bg-black flex items-center justify-center">
-                          <img
-                            src={receiptPreview}
-                            alt="Receipt Preview"
-                            className="w-full h-full object-cover"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setReceiptPreview(null)}
-                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      )}
+                    <h3 className="text-sm font-bold text-[#D4AF37] uppercase tracking-wider mb-2">2. රිසිට්පත එවීම (Payment Receipt)</h3>
+                    <div className="bg-[#D4AF37]/5 border border-[#D4AF37]/20 rounded-xl p-4 text-xs text-[#ffe596]/95 leading-relaxed space-y-2">
+                      <p className="font-bold text-[#FFD700] text-xs">
+                        📲 රිසිට්පත WhatsApp මඟින් අප වෙත එවන්න:
+                      </p>
+                      <p>
+                        මෙම තරඟයට නිර්මාණයක් ඇතුළත් කිරීමට රු. 300 ක මුදලක් ඉහත සඳහන් කළ ගිණුමට බැර කර, එම ගෙවීම් රිසිට්පත **WhatsApp** මඟින් අප වෙත යොමු කරන්න. (අදාළ WhatsApp අංකය ඉදිරියේදී මෙහි ප්‍රදර්ශනය කෙරේ. දැනට කරුණාකර ඔබගේ විස්තර ඇතුළත් කර මෙම පෝරමය ඉදිරිපත් කරන්න.)
+                      </p>
+                      <p className="text-[#F5F5F7]/70 italic border-t border-white/5 pt-2">
+                        Please transfer the entry fee of LKR 300 to the bank account mentioned above, and send the payment receipt to us via WhatsApp (the WhatsApp contact number will be provided here soon). For now, please fill out your details and submit this form.
+                      </p>
                     </div>
                   </div>
 

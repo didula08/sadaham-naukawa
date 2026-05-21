@@ -10,7 +10,7 @@ export interface ILantern extends Document {
   bankName: string;
   bankBranch: string;
   bankAccountNumber: string;
-  receiptImage: string;
+  receiptImage?: string;
   isApproved: boolean;
   isWinner: boolean;
   createdAt: Date;
@@ -26,10 +26,15 @@ const LanternSchema: Schema<ILantern> = new Schema({
   bankName: { type: String, required: true },
   bankBranch: { type: String, required: true },
   bankAccountNumber: { type: String, required: true },
-  receiptImage: { type: String, required: true },
+  receiptImage: { type: String, required: false },
   isApproved: { type: Boolean, default: false },
   isWinner: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 
-export const Lantern: Model<ILantern> = mongoose.models.Lantern || mongoose.model<ILantern>('Lantern', LanternSchema);
+if (mongoose.models && mongoose.models.Lantern) {
+  delete (mongoose.models as any).Lantern;
+}
+
+export const Lantern: Model<ILantern> = mongoose.model<ILantern>('Lantern', LanternSchema);
+

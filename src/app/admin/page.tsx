@@ -645,28 +645,36 @@ export default function AdminPage() {
                             <h4 className="text-xs font-black text-[#D4AF37] uppercase tracking-wider">
                               📄 ගෙවීම් රිසිට්පත (Receipt Slip - LKR 300)
                             </h4>
-                            <button
-                              onClick={() => setZoomReceipt(true)}
-                              className="text-xs text-[#FFD700] hover:underline flex items-center gap-1"
-                            >
-                              <Eye className="w-3.5 h-3.5" /> ලොකුවට බලන්න (Zoom)
-                            </button>
+                            {selectedLantern.receiptImage && (
+                              <button
+                                onClick={() => setZoomReceipt(true)}
+                                className="text-xs text-[#FFD700] hover:underline flex items-center gap-1"
+                              >
+                                <Eye className="w-3.5 h-3.5" /> ලොකුවට බලන්න (Zoom)
+                              </button>
+                            )}
                           </div>
 
-                          <div 
-                            onClick={() => setZoomReceipt(true)}
-                            className="w-full flex-grow rounded-lg overflow-hidden border border-white/10 relative bg-black flex items-center justify-center cursor-zoom-in"
-                          >
-                            {selectedLantern.receiptImage ? (
+                          {selectedLantern.receiptImage ? (
+                            <div 
+                              onClick={() => setZoomReceipt(true)}
+                              className="w-full flex-grow rounded-lg overflow-hidden border border-white/10 relative bg-black flex items-center justify-center cursor-zoom-in"
+                            >
                               <img
                                 src={selectedLantern.receiptImage}
                                 alt="Payment Receipt"
                                 className="w-full h-full max-h-[200px] md:max-h-[280px] object-contain hover:scale-[1.03] transition-transform duration-300"
                               />
-                            ) : (
-                              <div className="text-[#F5F5F7]/30 text-xs">රිසිට්පතක් සොයාගත නොහැක</div>
-                            )}
-                          </div>
+                            </div>
+                          ) : (
+                            <div className="w-full flex-grow rounded-lg border border-dashed border-[#D4AF37]/20 bg-[#D4AF37]/5 flex flex-col items-center justify-center p-4 text-center">
+                              <span className="text-2xl mb-1">📲</span>
+                              <p className="text-[#FFD700] text-xs font-bold mb-1">WhatsApp රිසිට්පතකි</p>
+                              <p className="text-[#F5F5F7]/70 text-[10px] leading-normal max-w-[200px]">
+                                රිසිට්පත WhatsApp මඟින් එවනු ලැබ ඇත. කරුණාකර එය පරීක්ෂා කරන්න.
+                              </p>
+                            </div>
+                          )}
                         </div>
 
                       </div>
