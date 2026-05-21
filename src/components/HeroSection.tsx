@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import SubmitButton from "./SubmitButton";
@@ -9,6 +10,14 @@ const VesakLantern3D = dynamic(() => import("./VesakLantern3D"), { ssr: false })
 
 // A component to create floating "Pahan" (clay lamp) glows or fireflies
 function FloatingLamps() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   const lamps = Array.from({ length: 20 });
   return (
     <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">

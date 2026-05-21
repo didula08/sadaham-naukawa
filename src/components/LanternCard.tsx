@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, PlayCircle, Sparkles } from 'lucide-react';
+import { Flame, PlayCircle, Sparkles } from 'lucide-react';
+import { getYoutubeId } from '@/lib/youtube';
+import YouTubePlayer from '@/components/YouTubePlayer';
 
 interface LanternCardProps {
   lantern: {
@@ -12,28 +14,26 @@ interface LanternCardProps {
     videoUrl: string;
     creatorName: string;
     likeCount: number;
+    isWinner?: boolean;
   };
 }
 
 export default function LanternCard({ lantern }: LanternCardProps) {
   const [isPlayingInline, setIsPlayingInline] = useState(false);
 
-  // Extract YouTube ID for thumbnail and embedding
-  const getYoutubeId = (url: string) => {
-    const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/);
-    return match ? match[1] : null;
-  };
-  
   const ytId = getYoutubeId(lantern.videoUrl);
   const thumbnailUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null;
   const embedUrl = ytId ? `https://www.youtube.com/embed/${ytId}` : lantern.videoUrl;
 
-  const isShorts = lantern.videoUrl.includes('shorts') || lantern.videoUrl.includes('/shorts/');
-  const mediaAspectRatio = isShorts ? 'aspect-[3/4]' : 'aspect-video';
+  const mediaAspectRatio = 'aspect-video'; // Force uniform card sizes
 
   return (
     <motion.div
-      className="bg-[#0D0B0F]/90 border border-[#D4AF37]/20 rounded-3xl overflow-hidden hover:border-[#D4AF37]/70 hover:shadow-[0_0_30px_rgba(212,175,55,0.15)] transition-all duration-500 group relative cursor-pointer flex flex-col h-full backdrop-blur-md"
+      className={`bg-gradient-to-b from-[#110E14]/95 to-[#070509]/95 rounded-3xl overflow-hidden hover:border-[#D4AF37]/75 transition-all duration-500 group relative cursor-pointer flex flex-col h-full backdrop-blur-lg ${
+        lantern.isWinner 
+          ? 'border-2 border-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.25)] hover:shadow-[0_0_35px_rgba(255,215,0,0.4)]' 
+          : 'border border-[#D4AF37]/20 hover:shadow-[0_0_30px_rgba(212,175,55,0.2)]'
+      }`}
       whileHover={{ y: -6 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -51,13 +51,12 @@ export default function LanternCard({ lantern }: LanternCardProps) {
       {/* Video Preview Section */}
       <div className={`${mediaAspectRatio} w-full bg-black relative overflow-hidden flex-shrink-0 border-b border-[#D4AF37]/15 z-10`}>
         {isPlayingInline ? (
-          <iframe
-            src={`${embedUrl}?autoplay=1`}
+          <YouTubePlayer
+            videoId={ytId}
+            embedUrl={embedUrl}
             title={lantern.title}
-            className="w-full h-full absolute top-0 left-0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
+            autoplay={true}
+          />
         ) : thumbnailUrl ? (
           <>
             <img 
@@ -96,26 +95,61 @@ export default function LanternCard({ lantern }: LanternCardProps) {
       <div className="p-6 flex flex-col flex-grow relative z-10 justify-between gap-4">
         <div>
           {/* Creator Tag */}
-          <div className="flex items-center gap-1.5 text-xs text-[#D4AF37]/80 mb-2 font-medium">
-            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-            <span>නිර්මාණය: {lantern.creatorName}</span>
+          <div className="flex items-center justify-between gap-1.5 text-xs mb-2 font-medium">
+            <div className="flex items-center gap-1.5 text-[#D4AF37]/90 font-serif">
+              <Sparkles className="w-3.5 h-3.5 animate-pulse text-[#FFD700]" />
+              <span>නිර්මාණය: <strong className="text-white">{lantern.creatorName}</strong></span>
+            </div>
+            {lantern.isWinner && (
+              <span className="flex items-center gap-1 bg-[#D4AF37] text-black px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow shadow-[#D4AF37]/50 font-sans">
+                🏆 Winner
+              </span>
+            )}
           </div>
 
           {/* Title */}
-          <h3 className="text-xl font-extrabold text-[#FFD700] group-hover:text-[#FFF] transition-colors duration-300 line-clamp-2 leading-snug gold-text-glow">
+          <h3 className="text-xl font-extrabold text-[#FFD700] group-hover:text-[#FFF] transition-colors duration-300 line-clamp-2 leading-snug gold-text-glow font-serif">
             {lantern.title}
           </h3>
+
+          {/* Description */}
+          <p className="text-xs text-[#F5F5F7]/60 line-clamp-2 font-sans font-light leading-relaxed mt-2">
+            {lantern.description}
+          </p>
         </div>
         
-        {/* Heart/Like counts footer */}
+        {/* Flame/Like counts footer */}
         <div className="flex justify-between items-center mt-2 pt-3 border-t border-white/5">
-          <div className="flex items-center gap-2 text-[#D4AF37]">
-            <Heart className="w-4 h-4 fill-[#D4AF37]" />
-            <span className="text-sm font-bold">{lantern.likeCount} පහන් (Lamps)</span>
+          <div className="flex items-center gap-2">
+            <motion.div
+              animate={{
+                scale: [1, 1.08, 0.96, 1.08, 1],
+                opacity: [0.8, 1, 0.75, 1, 0.8],
+                filter: [
+                  'drop-shadow(0 0 2px #FF6A00) drop-shadow(0 0 4px #FFD700)',
+                  'drop-shadow(0 0 4px #FF6A00) drop-shadow(0 0 8px #FFD700)',
+                  'drop-shadow(0 0 2px #FF6A00) drop-shadow(0 0 4px #FFD700)',
+                  'drop-shadow(0 0 5px #FF6A00) drop-shadow(0 0 10px #FFD700)',
+                  'drop-shadow(0 0 2px #FF6A00) drop-shadow(0 0 4px #FFD700)',
+                ]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="relative flex items-center justify-center"
+            >
+              <Flame className="w-5 h-5 text-[#FF6A00] fill-[#FF6A00]" />
+              <Flame className="w-5 h-5 text-[#FFCC00] fill-[#FFCC00] absolute animate-ping opacity-25" />
+            </motion.div>
+            <span className="text-sm font-extrabold text-white">
+              {lantern.likeCount} <span className="text-[#FFD700] text-xs font-serif font-semibold">පහන් (Lamps)</span>
+            </span>
           </div>
           
-          <span className="text-xs text-[#D4AF37] opacity-60 group-hover:opacity-100 group-hover:underline transition-all">
-            විස්තර බලන්න (View Details) &rarr;
+          <span className="text-xs text-[#D4AF37] font-semibold group-hover:underline transition-all">
+            විස්තර බලන්න &rarr;
           </span>
         </div>
       </div>

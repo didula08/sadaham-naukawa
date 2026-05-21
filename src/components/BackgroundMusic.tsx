@@ -99,7 +99,49 @@ export default function BackgroundMusic() {
       };
     };
 
+    const channel = typeof window !== "undefined" ? new BroadcastChannel("sadaham_naukawa_music") : null;
+
+    const handlePauseMusic = () => {
+      const activePlayer = playerRef.current || window.bgPlayerInstance;
+      if (activePlayer && typeof activePlayer.pauseVideo === "function") {
+        activePlayer.pauseVideo();
+      }
+    };
+
+    const handlePlayMusic = () => {
+      const activePlayer = playerRef.current || window.bgPlayerInstance;
+      if (activePlayer && typeof activePlayer.playVideo === "function") {
+        activePlayer.playVideo();
+      }
+    };
+
+    const handlePauseMusicFromEvent = () => {
+      handlePauseMusic();
+      if (channel) {
+        channel.postMessage("pause");
+      }
+    };
+
+    const handlePlayMusicFromEvent = () => {
+      handlePlayMusic();
+      if (channel) {
+        channel.postMessage("play");
+      }
+    };
+
+    if (channel) {
+      channel.onmessage = (event) => {
+        if (event.data === "pause") {
+          handlePauseMusic();
+        } else if (event.data === "play") {
+          handlePlayMusic();
+        }
+      };
+    }
+
     document.addEventListener("click", handleUserGesturePlay);
+    window.addEventListener("pause-bg-music", handlePauseMusicFromEvent);
+    window.addEventListener("play-bg-music", handlePlayMusicFromEvent);
     loadYoutubeAPI();
 
     return () => {
@@ -124,6 +166,11 @@ export default function BackgroundMusic() {
         delete window.onYouTubeIframeAPIReady;
       }
       document.removeEventListener("click", handleUserGesturePlay);
+      window.removeEventListener("pause-bg-music", handlePauseMusicFromEvent);
+      window.removeEventListener("play-bg-music", handlePlayMusicFromEvent);
+      if (channel) {
+        channel.close();
+      }
     };
   }, []);
 

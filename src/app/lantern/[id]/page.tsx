@@ -4,6 +4,9 @@ import LanternDetailsClient from '@/components/LanternDetailsClient';
 import { notFound } from 'next/navigation';
 import mongoose from 'mongoose';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }
@@ -19,12 +22,12 @@ export default async function LanternPage({ params }: PageProps) {
   await connectToDatabase();
   const lanternDoc = await Lantern.findById(id).lean();
 
-  if (!lanternDoc) {
+  if (!lanternDoc || (!lanternDoc.isApproved && !lanternDoc.isWinner)) {
     notFound();
   }
 
-  // Get all lanterns sorted in the exact same order as the homepage
-  const allLanterns = await Lantern.find({}, '_id title').sort({ likeCount: -1, createdAt: -1 }).lean();
+  // Get only approved lanterns sorted in the exact same order as the homepage
+  const allLanterns = await Lantern.find({ isApproved: true }, '_id title').sort({ likeCount: -1, createdAt: -1 }).lean();
   const currentIndex = allLanterns.findIndex((item) => item._id.toString() === id);
 
   const prevLantern = currentIndex > 0 
@@ -34,8 +37,17 @@ export default async function LanternPage({ params }: PageProps) {
     ? { id: allLanterns[currentIndex + 1]._id.toString(), title: allLanterns[currentIndex + 1].title } 
     : null;
 
-  // Convert MongoDB Document to a plain JSON object to pass to Client Component
-  const lantern = JSON.parse(JSON.stringify(lanternDoc));
+  // Pass only safe fields to the Client Component (excludes banking/receipt details)
+  const lantern = {
+    _id: lanternDoc._id.toString(),
+    title: lanternDoc.title,
+    description: lanternDoc.description,
+    videoUrl: lanternDoc.videoUrl,
+    creatorName: lanternDoc.creatorName,
+    likeCount: lanternDoc.likeCount,
+    createdAt: lanternDoc.createdAt instanceof Date ? lanternDoc.createdAt.toISOString() : String(lanternDoc.createdAt),
+    isWinner: lanternDoc.isWinner,
+  };
 
   return (
     <LanternDetailsClient 

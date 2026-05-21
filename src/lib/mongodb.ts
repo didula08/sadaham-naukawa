@@ -21,6 +21,9 @@ async function connectToDatabase() {
       let uri = process.env.MONGODB_URI;
 
       if (!uri) {
+        if (process.env.NODE_ENV === 'production') {
+          throw new Error('Please define the MONGODB_URI environment variable inside your deployment dashboard.');
+        }
         if (!cached.mongod) {
           console.log('Starting MongoDB Memory Server...');
           cached.mongod = await MongoMemoryServer.create();

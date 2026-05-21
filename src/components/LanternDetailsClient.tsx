@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Share2, ArrowLeft, Check, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, Share2, ArrowLeft, Check, Sparkles, ChevronLeft, ChevronRight, Trophy } from 'lucide-react';
 import { likeLantern } from '@/actions/lanternActions';
+import { getYoutubeId } from '@/lib/youtube';
+import YouTubePlayer from '@/components/YouTubePlayer';
 
 interface LanternDetailsClientProps {
   lantern: {
@@ -14,6 +16,7 @@ interface LanternDetailsClientProps {
     creatorName: string;
     likeCount: number;
     createdAt: string;
+    isWinner?: boolean;
   };
   prevLantern: { id: string; title: string } | null;
   nextLantern: { id: string; title: string } | null;
@@ -81,11 +84,6 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Extract YouTube ID
-  const getYoutubeId = (url: string) => {
-    const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/);
-    return match ? match[1] : null;
-  };
   const ytId = getYoutubeId(lantern.videoUrl);
   const embedUrl = ytId ? `https://www.youtube.com/embed/${ytId}` : lantern.videoUrl;
 
@@ -250,13 +248,12 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
                 isShorts ? 'h-full max-h-[calc(100vh-210px)] aspect-[9/16] shadow-[#D4AF37]/5' : 'w-full aspect-video shadow-[#D4AF37]/10'
               } backdrop-blur-sm`}
             >
-              <iframe
-                src={`${embedUrl}?autoplay=1&rel=0`}
+              <YouTubePlayer
+                videoId={ytId}
+                embedUrl={embedUrl}
                 title={lantern.title}
-                className="w-full h-full absolute top-0 left-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
+                autoplay={true}
+              />
             </div>
           </div>
 
@@ -268,10 +265,17 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
               {/* Gold Top Border line */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
               
-              <div className="flex items-center gap-2 text-base lg:text-lg text-[#FFD700] uppercase tracking-wider mb-3 font-black">
-                <Sparkles className="w-5 h-5 text-[#FFD700] animate-pulse" />
-                <span>වෙසක් නිර්මාණය (Vesak Creation)</span>
-              </div>
+              {lantern.isWinner ? (
+                <div className="flex items-center gap-2 text-sm lg:text-base text-[#FFD700] bg-[#D4AF37]/15 border border-[#D4AF37]/45 rounded-xl px-4 py-2 mb-4 font-black uppercase tracking-wider shadow-[0_0_15px_rgba(212,175,55,0.2)] animate-pulse w-fit">
+                  <Trophy className="w-4 h-4 text-[#FFD700] animate-bounce" />
+                  <span>🏆 තරඟයේ ජයග්‍රාහකයා (Winner - LKR 10,000)</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-base lg:text-lg text-[#FFD700] uppercase tracking-wider mb-3 font-black">
+                  <Sparkles className="w-5 h-5 text-[#FFD700] animate-pulse" />
+                  <span>වෙසක් නිර්මාණය (Vesak Creation)</span>
+                </div>
+              )}
               
               <h1 className="text-4xl lg:text-5xl font-black text-[#FFD700] gold-text-glow leading-tight mb-4">
                 {lantern.title}
