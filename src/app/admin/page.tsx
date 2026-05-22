@@ -658,6 +658,36 @@ export default function AdminPage() {
                               <p className="text-sm text-[#F5F5F7]/80 leading-relaxed whitespace-pre-wrap">{selectedLantern.description}</p>
                             </div>
                           </div>
+
+                          {/* Contact Details Card */}
+                          <div className="bg-[#0D1520]/80 border border-blue-500/20 rounded-xl p-4 space-y-3">
+                            <h4 className="text-xs font-black text-[#D4AF37] uppercase tracking-wider flex items-center gap-1.5">
+                              📞 සම්බන්ධතා විස්තර (Contact Details)
+                            </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                              <div className="bg-black/30 p-2.5 rounded-lg flex items-start gap-2">
+                                <span className="text-base mt-0.5">📱</span>
+                                <div>
+                                  <p className="text-[10px] text-[#F5F5F7]/40 mb-0.5">දුරකථන (Phone)</p>
+                                  <p className="font-bold text-white">{selectedLantern.phone || '—'}</p>
+                                </div>
+                              </div>
+                              <div className="bg-black/30 p-2.5 rounded-lg flex items-start gap-2">
+                                <span className="text-base mt-0.5">📧</span>
+                                <div>
+                                  <p className="text-[10px] text-[#F5F5F7]/40 mb-0.5">විද්‍යුත් තැපෑල (Email)</p>
+                                  <p className="font-bold text-white break-all">{selectedLantern.email || '—'}</p>
+                                </div>
+                              </div>
+                              <div className="bg-black/30 p-2.5 rounded-lg flex items-start gap-2 sm:col-span-2">
+                                <span className="text-base mt-0.5">🏠</span>
+                                <div>
+                                  <p className="text-[10px] text-[#F5F5F7]/40 mb-0.5">නිවාස ලිපිනය (Address)</p>
+                                  <p className="font-bold text-white whitespace-pre-wrap leading-relaxed">{selectedLantern.address || '—'}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
 
                         {/* Control Actions */}
@@ -705,34 +735,8 @@ export default function AdminPage() {
                         </div>
                       </div>
 
-                      {/* Right: Receipt & Bank Account */}
-                      <div className="space-y-4 flex flex-col">
-                        {/* Bank Details Card */}
-                        <div className="bg-[#0F1B12]/80 border border-green-500/20 rounded-xl p-4 space-y-2.5">
-                          <h4 className="text-xs font-black text-[#D4AF37] uppercase tracking-wider flex items-center gap-1">
-                            🏦 ත්‍යාග මුදල බැර කළ යුතු ගිණුම (Recipient Bank)
-                          </h4>
-                          <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div className="bg-black/30 p-2 rounded">
-                              <p className="text-[10px] text-[#F5F5F7]/40">හිමිකරුගේ නම (Acc Holder)</p>
-                              <p className="font-bold text-white truncate">{selectedLantern.bankAccountName}</p>
-                            </div>
-                            <div className="bg-black/30 p-2 rounded">
-                              <p className="text-[10px] text-[#F5F5F7]/40">බැංකුවේ නම (Bank)</p>
-                              <p className="font-bold text-white truncate">{selectedLantern.bankName}</p>
-                            </div>
-                            <div className="bg-black/30 p-2 rounded">
-                              <p className="text-[10px] text-[#F5F5F7]/40">ශාඛාව (Branch)</p>
-                              <p className="font-bold text-white truncate">{selectedLantern.bankBranch}</p>
-                            </div>
-                            <div className="bg-black/30 p-2 rounded col-span-2">
-                              <p className="text-[10px] text-[#F5F5F7]/40">ගිණුම් අංකය (Acc Number)</p>
-                              <p className="font-bold text-green-400 font-mono text-sm tracking-wide">{selectedLantern.bankAccountNumber}</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Receipt Preview */}
+                      {/* Right: Receipt */}
+                      <div className="space-y-4 flex flex-col">                        {/* Receipt Preview */}
                         <div className="flex-grow flex flex-col justify-between bg-black/45 border border-white/5 rounded-xl p-4 overflow-hidden relative min-h-[220px]">
                           <div className="flex justify-between items-center mb-2">
                             <h4 className="text-xs font-black text-[#D4AF37] uppercase tracking-wider">

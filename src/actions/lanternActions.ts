@@ -14,20 +14,18 @@ export async function addLantern(formData: FormData) {
     const title = formData.get('title') as string;
     const description = formData.get('description') as string;
     let videoUrl = formData.get('videoUrl') as string;
-    const bankAccountName = formData.get('bankAccountName') as string;
-    const bankName = formData.get('bankName') as string;
-    const bankBranch = formData.get('bankBranch') as string;
-    const bankAccountNumber = formData.get('bankAccountNumber') as string;
+    const phone = formData.get('phone') as string;
+    const email = formData.get('email') as string;
+    const address = formData.get('address') as string;
 
     if (
       !creatorName ||
       !title ||
       !description ||
       !videoUrl ||
-      !bankAccountName ||
-      !bankName ||
-      !bankBranch ||
-      !bankAccountNumber
+      !phone ||
+      !email ||
+      !address
     ) {
       return { error: 'සියලුම තොරතුරු ඇතුළත් කරන්න (Please fill all fields)' };
     }
@@ -44,10 +42,9 @@ export async function addLantern(formData: FormData) {
       title,
       description,
       videoUrl: sanitizedVideoUrl,
-      bankAccountName,
-      bankName,
-      bankBranch,
-      bankAccountNumber,
+      phone,
+      email,
+      address,
       isApproved: false,
       isWinner: false,
     });

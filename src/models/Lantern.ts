@@ -5,11 +5,10 @@ export interface ILantern extends Document {
   description: string;
   videoUrl: string;
   creatorName: string;
+  phone: string;
+  email: string;
+  address: string;
   likeCount: number;
-  bankAccountName: string;
-  bankName: string;
-  bankBranch: string;
-  bankAccountNumber: string;
   receiptImage?: string;
   isApproved: boolean;
   isWinner: boolean;
@@ -21,11 +20,10 @@ const LanternSchema: Schema<ILantern> = new Schema({
   description: { type: String, required: true },
   videoUrl: { type: String, required: true },
   creatorName: { type: String, required: true },
+  phone: { type: String, required: true },
+  email: { type: String, required: true },
+  address: { type: String, required: true },
   likeCount: { type: Number, default: 0 },
-  bankAccountName: { type: String, required: true },
-  bankName: { type: String, required: true },
-  bankBranch: { type: String, required: true },
-  bankAccountNumber: { type: String, required: true },
   receiptImage: { type: String, required: false },
   isApproved: { type: Boolean, default: false },
   isWinner: { type: Boolean, default: false },

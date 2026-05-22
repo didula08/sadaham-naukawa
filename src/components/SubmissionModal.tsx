@@ -160,9 +160,54 @@ export default function SubmissionModal({ isOpen, onClose }: SubmissionModalProp
                     </div>
                   </div>
 
+                  {/* Contact Details */}
+                  <div className="border-b border-white/10 pb-4 mb-4">
+                    <h3 className="text-sm font-bold text-[#D4AF37] uppercase tracking-wider mb-3">2. සම්බන්ධතා විස්තර (Contact Details)</h3>
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[#F5F5F7] text-sm mb-1">
+                            දුරකථන අංකය (Phone Number) <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="tel"
+                            name="phone"
+                            required
+                            className="w-full bg-black border border-[#D4AF37]/50 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#FFD700] focus:ring-1 focus:ring-[#FFD700] text-sm transition-all"
+                            placeholder="07X XXX XXXX"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[#F5F5F7] text-sm mb-1">
+                            විද්‍යුත් තැපෑල (Email Address) <span className="text-red-400">*</span>
+                          </label>
+                          <input
+                            type="email"
+                            name="email"
+                            required
+                            className="w-full bg-black border border-[#D4AF37]/50 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#FFD700] focus:ring-1 focus:ring-[#FFD700] text-sm transition-all"
+                            placeholder="example@gmail.com"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-[#F5F5F7] text-sm mb-1">
+                          නිවාස ලිපිනය (Home Address) <span className="text-red-400">*</span>
+                        </label>
+                        <textarea
+                          name="address"
+                          required
+                          rows={2}
+                          className="w-full bg-black border border-[#D4AF37]/50 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#FFD700] focus:ring-1 focus:ring-[#FFD700] text-sm transition-all"
+                          placeholder="ගෙදර ලිපිනය ඇතුළත් කරන්න..."
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Payment Receipt Instruction */}
                   <div className="border-b border-white/10 pb-4 mb-4">
-                    <h3 className="text-sm font-bold text-[#D4AF37] uppercase tracking-wider mb-2">2. රිසිට්පත එවීම (Payment Receipt)</h3>
+                    <h3 className="text-sm font-bold text-[#D4AF37] uppercase tracking-wider mb-2">3. රිසිට්පත එවීම (Payment Receipt)</h3>
                     <div className="bg-[#D4AF37]/5 border border-[#D4AF37]/20 rounded-xl p-4 text-xs text-[#ffe596]/95 leading-relaxed space-y-2">
                       <p className="font-bold text-[#FFD700] text-xs">
                         📲 රිසිට්පත WhatsApp මඟින් අප වෙත එවන්න:
@@ -176,52 +221,7 @@ export default function SubmissionModal({ isOpen, onClose }: SubmissionModalProp
                     </div>
                   </div>
 
-                  {/* User Bank Account Details (for 10,000 LKR Winner Prize) */}
-                  <div>
-                    <h3 className="text-sm font-bold text-[#D4AF37] uppercase tracking-wider mb-3">3. ඔබගේ බැංකු විස්තර (Your Bank details - for LKR 10,000 Prize)</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[#F5F5F7] text-xs mb-1">ගිණුම් හිමියාගේ නම (Account Name)</label>
-                        <input
-                          type="text"
-                          name="bankAccountName"
-                          required
-                          className="w-full bg-black border border-[#D4AF37]/50 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#FFD700] focus:ring-1 focus:ring-[#FFD700] text-xs transition-all"
-                          placeholder="නම (බැංකු පොතේ ඇති පරිදි)"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[#F5F5F7] text-xs mb-1">බැංකුවේ නම (Bank Name)</label>
-                        <input
-                          type="text"
-                          name="bankName"
-                          required
-                          className="w-full bg-black border border-[#D4AF37]/50 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#FFD700] focus:ring-1 focus:ring-[#FFD700] text-xs transition-all"
-                          placeholder="උදා: People's Bank"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[#F5F5F7] text-xs mb-1">ශාඛාව (Branch)</label>
-                        <input
-                          type="text"
-                          name="bankBranch"
-                          required
-                          className="w-full bg-black border border-[#D4AF37]/50 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#FFD700] focus:ring-1 focus:ring-[#FFD700] text-xs transition-all"
-                          placeholder="ශාඛාව"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[#F5F5F7] text-xs mb-1">ගිණුම් අංකය (Account Number)</label>
-                        <input
-                          type="text"
-                          name="bankAccountNumber"
-                          required
-                          className="w-full bg-black border border-[#D4AF37]/50 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#FFD700] focus:ring-1 focus:ring-[#FFD700] text-xs transition-all"
-                          placeholder="ගිණුම් අංකය"
-                        />
-                      </div>
-                    </div>
-                  </div>
+
 
                   {error && <p className="text-red-400 text-xs text-center font-semibold">{error}</p>}
 
