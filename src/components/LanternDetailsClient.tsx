@@ -286,7 +286,7 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
                   {lantern.creatorName.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="text-sm lg:text-base text-[#D4AF37] font-extrabold uppercase tracking-widest">නිර්මාණකරු (Creator)</p>
+                  <p className="text-sm lg:text-base text-[#D4AF37] font-extrabold uppercase tracking-widest">කලාකරු (Creator)</p>
                   <p className="text-2xl lg:text-3xl font-black text-white leading-tight mt-0.5">{lantern.creatorName}</p>
                 </div>
               </div>

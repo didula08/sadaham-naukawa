@@ -642,7 +642,7 @@ export default function AdminPage() {
                           <div className="bg-white/3 rounded-xl p-4 border border-white/5 space-y-3">
                             <div className="flex justify-between items-start gap-4">
                               <div>
-                                <p className="text-[10px] text-[#D4AF37] font-bold uppercase tracking-widest">නිර්මාණකරු (Creator)</p>
+                                <p className="text-[10px] text-[#D4AF37] font-bold uppercase tracking-widest">කලාකරු (Creator)</p>
                                 <p className="text-lg font-black text-white">{selectedLantern.creatorName}</p>
                               </div>
                               <div className="text-right">

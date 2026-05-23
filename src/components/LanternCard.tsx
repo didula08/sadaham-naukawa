@@ -96,9 +96,9 @@ export default function LanternCard({ lantern }: LanternCardProps) {
         <div>
           {/* Creator Tag */}
           <div className="flex items-center justify-between gap-1.5 text-xs mb-2 font-medium">
-            <div className="flex items-center gap-1.5 text-[#D4AF37]/90 font-serif">
+            <div className="flex items-center gap-1.5 text-[#D4AF37]/90 font-sans">
               <Sparkles className="w-3.5 h-3.5 animate-pulse text-[#FFD700]" />
-              <span>නිර්මාණය: <strong className="text-white">{lantern.creatorName}</strong></span>
+              <span>කලාකරු: <strong className="text-white">{lantern.creatorName}</strong></span>
             </div>
             {lantern.isWinner && (
               <span className="flex items-center gap-1 bg-[#D4AF37] text-black px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shadow shadow-[#D4AF37]/50 font-sans">

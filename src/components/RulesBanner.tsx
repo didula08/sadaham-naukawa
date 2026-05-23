@@ -3,20 +3,16 @@
 import { useEffect, useState } from 'react';
 import { X, ScrollText, ShieldCheck, AlertTriangle, Coins, Receipt, Eye, Clapperboard, Flame, User } from 'lucide-react';
 
-const RULES_ACCEPTED_KEY = 'sadaham_rules_accepted';
+
 
 export default function RulesBanner() {
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
 
   useEffect(() => {
-    // Show the banner every time the user visits (or use sessionStorage to show once per session)
-    const accepted = sessionStorage.getItem(RULES_ACCEPTED_KEY);
-    if (!accepted) {
-      // Small delay so hero section mounts first and the blur is visible
-      const timer = setTimeout(() => setVisible(true), 200);
-      return () => clearTimeout(timer);
-    }
+    // Always show the banner on every page load/reload
+    const timer = setTimeout(() => setVisible(true), 200);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleClose = () => {
@@ -24,7 +20,6 @@ export default function RulesBanner() {
     setTimeout(() => {
       setVisible(false);
       setClosing(false);
-      sessionStorage.setItem(RULES_ACCEPTED_KEY, 'true');
     }, 400);
   };
 
