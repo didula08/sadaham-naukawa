@@ -76,7 +76,7 @@ export default function SubmissionModal({ isOpen, onClose }: SubmissionModalProp
                 <div className="space-y-2">
                   <h3 className="text-2xl font-bold text-white">සාර්ථකයි! (Submitted!)</h3>
                   <p className="text-[#F5F5F7]/70 text-sm leading-relaxed max-w-md mx-auto">
-                    ඔබගේ නිර්මාණය සාර්ථකව ඇතුළත් කරන ලදී. කරුණාකර රුපියල් 300 ක ගෙවීම් රිසිට්පත WhatsApp මඟින් අප වෙත එවීමට කටයුතු කරන්න. පරිපාලක (Admin) විසින් එය පරීක්ෂා කර අනුමත කිරීමෙන් පසු ඔබේ නිර්මාණය වෙබ් අඩවියේ ප්‍රදර්ශනය කෙරේ. ජයග්‍රාහකයාට රුපියල් 10,000 ක මුදලක් පිරිනමනු ලැබේ!
+                    ඔබගේ නිර්මාණය සාර්ථකව ඇතුළත් කරන ලදී. කරුණාකර රුපියල් 300 ක ගෙවීම් රිසිට්පත WhatsApp (+94 71 601 0533) මඟින් අප වෙත එවීමට කටයුතු කරන්න. පරිපාලක (Admin) විසින් එය පරීක්ෂා කර අනුමත කිරීමෙන් පසු ඔබේ නිර්මාණය වෙබ් අඩවියේ ප්‍රදර්ශනය කෙරේ. ජයග්‍රාහකයාට රුපියල් 10,000 ක මුදලක් පිරිනමනු ලැබේ!
                   </p>
                 </div>
                 <button
@@ -210,13 +210,13 @@ export default function SubmissionModal({ isOpen, onClose }: SubmissionModalProp
                     <h3 className="text-sm font-bold text-[#D4AF37] uppercase tracking-wider mb-2">3. රිසිට්පත එවීම (Payment Receipt)</h3>
                     <div className="bg-[#D4AF37]/5 border border-[#D4AF37]/20 rounded-xl p-4 text-xs text-[#ffe596]/95 leading-relaxed space-y-2">
                       <p className="font-bold text-[#FFD700] text-xs">
-                        📲 රිසිට්පත WhatsApp මඟින් අප වෙත එවන්න:
+                        📲 රිසිට්පත WhatsApp (+94 71 601 0533) මඟින් අප වෙත එවන්න:
                       </p>
                       <p>
-                        මෙම තරඟයට නිර්මාණයක් ඇතුළත් කිරීමට රු. 300 ක මුදලක් ඉහත සඳහන් කළ ගිණුමට බැර කර, එම ගෙවීම් රිසිට්පත **WhatsApp** මඟින් අප වෙත යොමු කරන්න. (අදාළ WhatsApp අංකය ඉදිරියේදී මෙහි ප්‍රදර්ශනය කෙරේ. දැනට කරුණාකර ඔබගේ විස්තර ඇතුළත් කර මෙම පෝරමය ඉදිරිපත් කරන්න.)
+                        මෙම තරඟයට නිර්මාණයක් ඇතුළත් කිරීමට රු. 300 ක මුදලක් ඉහත සඳහන් කළ ගිණුමට බැර කර, එම ගෙවීම් රිසිට්පත **WhatsApp (+94 71 601 0533)** මඟින් අප වෙත යොමු කරන්න.
                       </p>
                       <p className="text-[#F5F5F7]/70 italic border-t border-white/5 pt-2">
-                        Please transfer the entry fee of LKR 300 to the bank account mentioned above, and send the payment receipt to us via WhatsApp (the WhatsApp contact number will be provided here soon). For now, please fill out your details and submit this form.
+                        Please transfer the entry fee of LKR 300 to the bank account mentioned above, and send the payment receipt to us via WhatsApp (+94 71 601 0533).
                       </p>
                     </div>
                   </div>
