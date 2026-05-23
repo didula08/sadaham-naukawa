@@ -15,7 +15,7 @@ async function connectToDatabase() {
     const opts = {
       bufferCommands: false,
       maxPoolSize: 10, // Optimize database connection count for serverless environments
-      autoSelectFamily: false, // Prevents TLS issues with IPv6/IPv4 connection selection
+      family: 4, // Force IPv4 to prevent IPv6 connection timeouts (common on Windows)
     };
 
     cached.promise = (async () => {

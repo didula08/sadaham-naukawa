@@ -102,9 +102,9 @@ export default function SubmissionModal({ isOpen, onClose }: SubmissionModalProp
                   </p>
                   <div className="bg-black/55 p-3 rounded-lg border border-white/5 space-y-1">
                     <p>🏦 <strong className="text-white">බැංකුව (Bank):</strong> ලංකා බැංකුව (Bank of Ceylon)</p>
-                    <p>👤 <strong className="text-white">නම (Name):</strong> සදහම් නෞකාව වෙසක් කමිටුව</p>
-                    <p>🔢 <strong className="text-white">ගිණුම් අංකය (Acc No):</strong> 1234567890</p>
-                    <p>📍 <strong className="text-white">ශාඛාව (Branch):</strong> කොළඹ මධ්‍යම ශාඛාව (Colombo Central)</p>
+                    <p>👤 <strong className="text-white">නම (Name):</strong>P.D.D.N.Wijesuriya</p>
+                    <p>🔢 <strong className="text-white">ගිණුම් අංකය (Acc No):</strong> 3496929</p>
+                    <p>📍 <strong className="text-white">ශාඛාව (Branch):</strong> පූගොඩ</p>
                   </div>
                 </div>
 

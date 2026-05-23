@@ -1,7 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { headers } from 'next/headers';
+import { headers, cookies } from 'next/headers';
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import xss from 'xss';
 import connectToDatabase from '@/lib/mongodb';
 import { Lantern } from '@/models/Lantern';
 import { Like } from '@/models/Like';
@@ -13,7 +16,7 @@ export async function addLantern(formData: FormData) {
     const creatorName = formData.get('creatorName') as string;
     const title = formData.get('title') as string;
     const description = formData.get('description') as string;
-    let videoUrl = formData.get('videoUrl') as string;
+    const videoUrl = formData.get('videoUrl') as string;
     const phone = formData.get('phone') as string;
     const email = formData.get('email') as string;
     const address = formData.get('address') as string;
@@ -30,21 +33,68 @@ export async function addLantern(formData: FormData) {
       return { error: 'සියලුම තොරතුරු ඇතුළත් කරන්න (Please fill all fields)' };
     }
 
-    // Basic sanitization/extraction for YouTube URLs
-    let sanitizedVideoUrl = videoUrl;
-    const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/);
+    // Strict input length validation to prevent Denial of Service via large payloads
+    if (creatorName.length > 100) return { error: 'නම වැඩියි (Name too long. Max 100 characters)' };
+    if (title.length > 100) return { error: 'මාතෘකාව වැඩියි (Title too long. Max 100 characters)' };
+    if (description.length > 1000) return { error: 'විස්තරය වැඩියි (Description too long. Max 1000 characters)' };
+    if (address.length > 500) return { error: 'ලිපිනය වැඩියි (Address too long. Max 500 characters)' };
+
+    // Format verification for Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email) || email.length > 100) {
+      return { error: 'වලංගු විද්‍යුත් තැපෑලක් ඇතුළත් කරන්න (Please enter a valid email address)' };
+    }
+
+    // Format verification for Phone
+    const phoneRegex = /^[+0-9\s-]{8,20}$/;
+    if (!phoneRegex.test(phone)) {
+      return { error: 'වලංගු දුරකථන අංකයක් ඇතුළත් කරන්න (Please enter a valid phone number)' };
+    }
+
+    // Validate video URL domain & protocol to prevent arbitrary iframe embedding / javascript: XSS
+    let sanitizedVideoUrl = videoUrl.trim();
+    try {
+      const parsedUrl = new URL(sanitizedVideoUrl);
+      if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+        return { error: 'වලංගු වීඩියෝ සබැඳියක් ඇතුළත් කරන්න (Invalid video URL protocol)' };
+      }
+      
+      const hostname = parsedUrl.hostname.toLowerCase();
+      const allowedDomains = [
+        'youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be',
+        'tiktok.com', 'www.tiktok.com', 'vm.tiktok.com', 'vt.tiktok.com', 'm.tiktok.com'
+      ];
+      const isAllowedDomain = allowedDomains.some(domain => hostname === domain || hostname.endsWith('.' + domain));
+      
+      if (!isAllowedDomain) {
+        return { error: 'යූටියුබ් හෝ ටික්ටොක් සබැඳියක් පමණක් ඇතුළත් කරන්න (Please enter only YouTube or TikTok video links)' };
+      }
+    } catch (_) {
+      return { error: 'වලංගු වීඩියෝ සබැඳියක් ඇතුළත් කරන්න (Invalid video URL)' };
+    }
+
+    // YouTube embedding extraction
+    const ytMatch = sanitizedVideoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/);
     if (ytMatch && ytMatch[1]) {
       sanitizedVideoUrl = `https://www.youtube.com/embed/${ytMatch[1]}`;
     }
 
+    // Sanitize user inputs using xss to prevent Stored XSS
+    const cleanCreatorName = xss(creatorName.trim());
+    const cleanTitle = xss(title.trim());
+    const cleanDescription = xss(description.trim());
+    const cleanPhone = xss(phone.trim());
+    const cleanEmail = xss(email.trim());
+    const cleanAddress = xss(address.trim());
+
     const newLantern = new Lantern({
-      creatorName,
-      title,
-      description,
+      creatorName: cleanCreatorName,
+      title: cleanTitle,
+      description: cleanDescription,
       videoUrl: sanitizedVideoUrl,
-      phone,
-      email,
-      address,
+      phone: cleanPhone,
+      email: cleanEmail,
+      address: cleanAddress,
       isApproved: false,
       isWinner: false,
     });
@@ -133,18 +183,54 @@ export async function getWinnerLantern() {
 function getAdminPassword(): string {
   const adminPass = process.env.ADMIN_PASSWORD;
   if (!adminPass) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('ADMIN_PASSWORD environment variable is not configured');
-    }
-    return 'admin123'; // dev fallback
+    throw new Error('ADMIN_PASSWORD environment variable is not configured');
   }
   return adminPass;
 }
 
-export async function verifyAdminPassword(password: string) {
+function getJwtSecret(): string {
+  return process.env.JWT_SECRET || getAdminPassword();
+}
+
+export async function verifyAdminToken(token: string): Promise<boolean> {
+  try {
+    const decoded = jwt.verify(token, getJwtSecret()) as any;
+    return !!(decoded && decoded.role === 'admin');
+  } catch (err) {
+    return false;
+  }
+}
+
+export async function checkAdminAuth() {
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get('admin_session');
+  if (!sessionCookie || !(await verifyAdminToken(sessionCookie.value))) {
+    throw new Error('Unauthorized');
+  }
+  return true;
+}
+
+// Helper to compare passwords in constant time to prevent timing attacks
+function timingSafeCompare(password: string, adminPass: string): boolean {
+  const aHash = crypto.createHash('sha256').update(password).digest();
+  const bHash = crypto.createHash('sha256').update(adminPass).digest();
+  const isMatch = crypto.timingSafeEqual(aHash, bHash);
+  return isMatch && password.length === adminPass.length;
+}
+
+export async function loginAdmin(password: string) {
   try {
     const adminPass = getAdminPassword();
-    if (password === adminPass) {
+    if (timingSafeCompare(password, adminPass)) {
+      const token = jwt.sign({ role: 'admin' }, getJwtSecret(), { expiresIn: '1d' });
+      const cookieStore = await cookies();
+      cookieStore.set('admin_session', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 // 1 day
+      });
       return { success: true };
     }
     return { error: 'වැරදි මුරපදයක් (Incorrect passcode)' };
@@ -154,11 +240,32 @@ export async function verifyAdminPassword(password: string) {
   }
 }
 
-export async function getAdminLanterns(password: string) {
-  const adminPass = getAdminPassword();
-  if (password !== adminPass) {
-    throw new Error('Unauthorized');
+export async function logoutAdmin() {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete('admin_session');
+    return { success: true };
+  } catch (error) {
+    return { error: 'Logout failed' };
   }
+}
+
+// Kept for backward compatibility if needed, though loginAdmin should be used
+export async function verifyAdminPassword(password: string) {
+  try {
+    const adminPass = getAdminPassword();
+    if (timingSafeCompare(password, adminPass)) {
+      return { success: true };
+    }
+    return { error: 'වැරදි මුරපදයක් (Incorrect passcode)' };
+  } catch (error: any) {
+    console.error('Admin authentication error:', error);
+    return { error: error.message || 'පද්ධති දෝෂයක් (System configuration error)' };
+  }
+}
+
+export async function getAdminLanterns() {
+  await checkAdminAuth();
 
   try {
     await connectToDatabase();
@@ -172,12 +279,9 @@ export async function getAdminLanterns(password: string) {
   }
 }
 
-export async function approveLantern(id: string, password: string) {
+export async function approveLantern(id: string) {
   try {
-    const adminPass = getAdminPassword();
-    if (password !== adminPass) {
-      return { error: 'Unauthorized' };
-    }
+    await checkAdminAuth();
 
     await connectToDatabase();
     const updated = await Lantern.findByIdAndUpdate(id, { isApproved: true }, { new: true });
@@ -193,12 +297,9 @@ export async function approveLantern(id: string, password: string) {
   }
 }
 
-export async function rejectLantern(id: string, password: string) {
+export async function rejectLantern(id: string) {
   try {
-    const adminPass = getAdminPassword();
-    if (password !== adminPass) {
-      return { error: 'Unauthorized' };
-    }
+    await checkAdminAuth();
 
     await connectToDatabase();
     const deleted = await Lantern.findByIdAndDelete(id);
@@ -214,12 +315,9 @@ export async function rejectLantern(id: string, password: string) {
   }
 }
 
-export async function selectWinner(id: string, password: string) {
+export async function selectWinner(id: string) {
   try {
-    const adminPass = getAdminPassword();
-    if (password !== adminPass) {
-      return { error: 'Unauthorized' };
-    }
+    await checkAdminAuth();
 
     await connectToDatabase();
     // Reset previous winner

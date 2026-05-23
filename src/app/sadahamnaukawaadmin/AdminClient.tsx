@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { 
-  verifyAdminPassword, 
+  loginAdmin,
+  logoutAdmin,
   getAdminLanterns, 
   approveLantern, 
   rejectLantern, 
   selectWinner 
 } from '@/actions/lanternActions';
+import { useRouter } from 'next/navigation';
 import { 
   Lock, Loader2, CheckCircle, XCircle, Trophy, 
   Coins, Clock, Grid, ChevronRight, X, Eye, 
@@ -16,12 +18,12 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function AdminPage() {
-  const [passcode, setPasscode] = useState('');
+export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthenticated: boolean }) {
   const [inputPass, setInputPass] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
   const [loadingAuth, setLoadingAuth] = useState(false);
   const [errorAuth, setErrorAuth] = useState('');
+  const router = useRouter();
   
   const [lanterns, setLanterns] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(false);
@@ -31,13 +33,12 @@ export default function AdminPage() {
   const [zoomReceipt, setZoomReceipt] = useState(false);
   const [processingAction, setProcessingAction] = useState(false);
 
-  // Check storage on mount
+  // Initial load if authenticated
   useEffect(() => {
-    const saved = localStorage.getItem('admin_passcode');
-    if (saved) {
-      handleAuth(saved);
+    if (initialIsAuthenticated) {
+      loadLanterns();
     }
-  }, []);
+  }, [initialIsAuthenticated]);
 
   const handleAuthSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,15 +49,13 @@ export default function AdminPage() {
     setLoadingAuth(true);
     setErrorAuth('');
     try {
-      const res = await verifyAdminPassword(pass);
+      const res = await loginAdmin(pass);
       if (res.success) {
-        setPasscode(pass);
         setIsAuthenticated(true);
-        localStorage.setItem('admin_passcode', pass);
-        await loadLanterns(pass);
+        router.refresh();
+        await loadLanterns();
       } else {
         setErrorAuth(res.error || 'Incorrect passcode');
-        localStorage.removeItem('admin_passcode');
       }
     } catch (e) {
       setErrorAuth('Authentication error. Please try again.');
@@ -65,10 +64,10 @@ export default function AdminPage() {
     }
   };
 
-  const loadLanterns = async (pass: string) => {
+  const loadLanterns = async () => {
     setLoadingData(true);
     try {
-      const data = await getAdminLanterns(pass);
+      const data = await getAdminLanterns();
       setLanterns(data);
     } catch (e) {
       console.error('Error loading data:', e);
@@ -77,18 +76,18 @@ export default function AdminPage() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logoutAdmin();
     setIsAuthenticated(false);
-    setPasscode('');
     setInputPass('');
     setLanterns([]);
-    localStorage.removeItem('admin_passcode');
+    router.refresh();
   };
 
   const handleApprove = async (id: string) => {
     if (processingAction) return;
     setProcessingAction(true);
-    const res = await approveLantern(id, passcode);
+    const res = await approveLantern(id);
     setProcessingAction(false);
     if (res.success) {
       setLanterns(prev => prev.map(l => l._id === id ? { ...l, isApproved: true } : l));
@@ -104,7 +103,7 @@ export default function AdminPage() {
     if (!confirm('මෙම නිර්මාණය සහ රිසිට්පත සම්පූර්ණයෙන්ම මකා දැමීමට අවශ්‍යද? (Are you sure you want to permanently delete/reject this submission?)')) return;
     if (processingAction) return;
     setProcessingAction(true);
-    const res = await rejectLantern(id, passcode);
+    const res = await rejectLantern(id);
     setProcessingAction(false);
     if (res.success) {
       setLanterns(prev => prev.filter(l => l._id !== id));
@@ -118,7 +117,7 @@ export default function AdminPage() {
     if (!confirm('මෙම නිර්මාණය තරඟයේ ජයග්‍රාහකයා (10,000 LKR) ලෙස තේරීමට අවශ්‍යද? (Are you sure you want to select this creation as the winner?)')) return;
     if (processingAction) return;
     setProcessingAction(true);
-    const res = await selectWinner(id, passcode);
+    const res = await selectWinner(id);
     setProcessingAction(false);
     if (res.success) {
       setLanterns(prev => prev.map(l => ({ 

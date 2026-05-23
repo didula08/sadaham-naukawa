@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import BackgroundMusic from "@/components/BackgroundMusic";
-import AdminGateButton from "@/components/AdminGateButton";
 
 export const metadata: Metadata = {
   title: "සදහම් නෞකාව වෙසක් කලාපය | Sadaham Naukawa Vesak Kalapaya",
@@ -18,7 +17,6 @@ export default function RootLayout({
       <body suppressHydrationWarning className="antialiased selection:bg-[#D4AF37] selection:text-black min-h-screen flex flex-col">
         {children}
         <BackgroundMusic />
-        <AdminGateButton />
       </body>
     </html>
   );
