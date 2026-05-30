@@ -76,7 +76,7 @@ export default function SubmissionModal({ isOpen, onClose }: SubmissionModalProp
                 <div className="space-y-2">
                   <h3 className="text-2xl font-bold text-white">සාර්ථකයි! (Submitted!)</h3>
                   <p className="text-[#F5F5F7]/70 text-sm leading-relaxed max-w-md mx-auto">
-                    ඔබගේ නිර්මාණය සාර්ථකව ඇතුළත් කරන ලදී. කරුණාකර රුපියල් 300 ක ගෙවීම් රිසිට්පත WhatsApp (+94 71 601 0533) මඟින් අප වෙත එවීමට කටයුතු කරන්න. පරිපාලක (Admin) විසින් එය පරීක්ෂා කර අනුමත කිරීමෙන් පසු ඔබේ නිර්මාණය වෙබ් අඩවියේ ප්‍රදර්ශනය කෙරේ. ජයග්‍රාහකයාට රුපියල් 10,000 ක මුදලක් පිරිනමනු ලැබේ!
+                    ඔබගේ නිර්මාණය සාර්ථකව ඇතුළත් කරන ලදී. කරුණාකර රුපියල් 300 ක ගෙවීම් රිසිට්පත WhatsApp (+94 71 601 0533) මඟින් අප වෙත එවීමට කටයුතු කරන්න. පරිපාලක (Admin) විසින් එය පරීක්ෂා කර අනුමත කිරීමෙන් පසු ඔබේ නිර්මාණය වෙබ් අඩවියේ ප්‍රදර්ශනය කෙරේ. ජයග්‍රාහකයාට රුපියල් 5,000 ක මුදලක් පිරිනමනු ලැබේ!
                   </p>
                 </div>
                 <button
@@ -98,7 +98,7 @@ export default function SubmissionModal({ isOpen, onClose }: SubmissionModalProp
                     💰 ඇතුළත් කිරීමේ ගාස්තුව: රු. 300 (Entry Fee: LKR 300)
                   </p>
                   <p className="text-center text-[#F5F5F7]/80">
-                    මෙම තරඟයට නිර්මාණයක් ඇතුළත් කිරීමට රු. 300 ක මුදලක් පහත ගිණුමට බැර කර, එම ගෙවීම් රිසිට්පත WhatsApp මඟින් අප වෙත යොමු කරන්න. (ජයග්‍රාහකයාට රු. 10,000 ක තෑග්ගක් හිමිවේ.)
+                    මෙම තරඟයට නිර්මාණයක් ඇතුළත් කිරීමට රු. 300 ක මුදලක් පහත ගිණුමට බැර කර, එම ගෙවීම් රිසිට්පත WhatsApp මඟින් අප වෙත යොමු කරන්න. (ජයග්‍රාහකයාට රු. 5,000 ක තෑග්ගක් හිමිවේ.)
                   </p>
                   <div className="bg-black/55 p-3 rounded-lg border border-white/5 space-y-1">
                     <p>🏦 <strong className="text-white">බැංකුව (Bank):</strong> ලංකා බැංකුව (Bank of Ceylon)</p>

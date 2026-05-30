@@ -1,30 +1,31 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
+import {
   loginAdmin,
   logoutAdmin,
-  getAdminLanterns, 
-  approveLantern, 
-  rejectLantern, 
-  selectWinner 
+  getAdminLanterns,
+  approveLantern,
+  rejectLantern,
+  selectWinner
 } from '@/actions/lanternActions';
 import { useRouter } from 'next/navigation';
-import { 
-  Lock, Loader2, CheckCircle, XCircle, Trophy, 
-  Coins, Clock, Grid, ChevronRight, X, Eye, 
+import {
+  Lock, Loader2, CheckCircle, XCircle, Trophy,
+  Coins, Clock, Grid, ChevronRight, X, Eye,
   ExternalLink, LogOut, Heart, ShieldAlert, Sparkles,
   Home
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import { getYoutubeId } from '@/lib/youtube';
+import { getTikTokId } from '@/lib/tiktok';
 export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthenticated: boolean }) {
   const [inputPass, setInputPass] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
   const [loadingAuth, setLoadingAuth] = useState(false);
   const [errorAuth, setErrorAuth] = useState('');
   const router = useRouter();
-  
+
   const [lanterns, setLanterns] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(false);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved'>('all');
@@ -114,16 +115,16 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
   };
 
   const handleSelectWinner = async (id: string) => {
-    if (!confirm('මෙම නිර්මාණය තරඟයේ ජයග්‍රාහකයා (10,000 LKR) ලෙස තේරීමට අවශ්‍යද? (Are you sure you want to select this creation as the winner?)')) return;
+    if (!confirm('මෙම නිර්මාණය තරඟයේ ජයග්‍රාහකයා (5,000 LKR) ලෙස තේරීමට අවශ්‍යද? (Are you sure you want to select this creation as the winner?)')) return;
     if (processingAction) return;
     setProcessingAction(true);
     const res = await selectWinner(id);
     setProcessingAction(false);
     if (res.success) {
-      setLanterns(prev => prev.map(l => ({ 
-        ...l, 
-        isWinner: l._id === id, 
-        isApproved: l._id === id ? true : l.isApproved 
+      setLanterns(prev => prev.map(l => ({
+        ...l,
+        isWinner: l._id === id,
+        isApproved: l._id === id ? true : l.isApproved
       })));
       if (selectedLantern?._id === id) {
         setSelectedLantern((prev: any) => ({ ...prev, isWinner: true, isApproved: true }));
@@ -262,7 +263,7 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              <motion.div 
+              <motion.div
                 whileHover={{ y: -4 }}
                 className="bg-[#0D0B0F]/80 border border-[#D4AF37]/20 rounded-2xl p-5 flex items-center gap-4 backdrop-blur-md"
               >
@@ -276,7 +277,7 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 whileHover={{ y: -4 }}
                 className="bg-[#0D0B0F]/80 border border-[#D4AF37]/20 rounded-2xl p-5 flex items-center gap-4 backdrop-blur-md"
               >
@@ -290,7 +291,7 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 whileHover={{ y: -4 }}
                 className="bg-[#0D0B0F]/80 border border-[#D4AF37]/20 rounded-2xl p-5 flex items-center gap-4 backdrop-blur-md"
               >
@@ -304,7 +305,7 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 whileHover={{ y: -4 }}
                 className="bg-[#0D0B0F]/80 border border-[#D4AF37]/20 rounded-2xl p-5 flex items-center gap-4 backdrop-blur-md"
               >
@@ -316,7 +317,7 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                   <p className="text-lg font-black text-[#FFD700] mt-1 line-clamp-1">
                     {winnerLantern ? winnerLantern.creatorName : 'තෝරා නොමැත'}
                   </p>
-                  <p className="text-[10px] text-[#D4AF37] mt-0.5">ත්‍යාගය: රු. 10,000</p>
+                  <p className="text-[10px] text-[#D4AF37] mt-0.5">ත්‍යාගය: රු. 5,000</p>
                 </div>
               </motion.div>
             </div>
@@ -335,17 +336,15 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                     <span className="text-[10px] text-[#F5F5F7]/40 px-2 uppercase tracking-wider font-bold">පිළිවෙල (Sort):</span>
                     <button
                       onClick={() => setSortBy('date')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-grow sm:flex-grow-0 ${
-                        sortBy === 'date' ? 'bg-[#D4AF37]/25 text-[#FFD700] border border-[#D4AF37]/35' : 'text-[#F5F5F7]/60 hover:text-white'
-                      }`}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-grow sm:flex-grow-0 ${sortBy === 'date' ? 'bg-[#D4AF37]/25 text-[#FFD700] border border-[#D4AF37]/35' : 'text-[#F5F5F7]/60 hover:text-white'
+                        }`}
                     >
                       දිනය (Date)
                     </button>
                     <button
                       onClick={() => setSortBy('reacts')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1 flex-grow sm:flex-grow-0 ${
-                        sortBy === 'reacts' ? 'bg-[#D4AF37]/25 text-[#FFD700] border border-[#D4AF37]/35' : 'text-[#F5F5F7]/60 hover:text-white'
-                      }`}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1 flex-grow sm:flex-grow-0 ${sortBy === 'reacts' ? 'bg-[#D4AF37]/25 text-[#FFD700] border border-[#D4AF37]/35' : 'text-[#F5F5F7]/60 hover:text-white'
+                        }`}
                     >
                       <Heart className="w-3 h-3 fill-current text-[#D4AF37]" />
                       <span>මනාප (Reacts)</span>
@@ -356,17 +355,15 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                   <div className="flex bg-black/60 rounded-xl p-1 border border-white/5 w-full sm:w-auto">
                     <button
                       onClick={() => setFilter('all')}
-                      className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex-grow sm:flex-grow-0 ${
-                        filter === 'all' ? 'bg-[#D4AF37] text-black' : 'text-[#F5F5F7]/60 hover:text-white'
-                      }`}
+                      className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex-grow sm:flex-grow-0 ${filter === 'all' ? 'bg-[#D4AF37] text-black' : 'text-[#F5F5F7]/60 hover:text-white'
+                        }`}
                     >
                       සියල්ල (All)
                     </button>
                     <button
                       onClick={() => setFilter('pending')}
-                      className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1 flex-grow sm:flex-grow-0 ${
-                        filter === 'pending' ? 'bg-yellow-500 text-black' : 'text-[#F5F5F7]/60 hover:text-white'
-                      }`}
+                      className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1 flex-grow sm:flex-grow-0 ${filter === 'pending' ? 'bg-yellow-500 text-black' : 'text-[#F5F5F7]/60 hover:text-white'
+                        }`}
                     >
                       <span>අපේක්ෂිත</span>
                       {pendingCount > 0 && (
@@ -375,9 +372,8 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                     </button>
                     <button
                       onClick={() => setFilter('approved')}
-                      className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex-grow sm:flex-grow-0 ${
-                        filter === 'approved' ? 'bg-green-500 text-black' : 'text-[#F5F5F7]/60 hover:text-white'
-                      }`}
+                      className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex-grow sm:flex-grow-0 ${filter === 'approved' ? 'bg-green-500 text-black' : 'text-[#F5F5F7]/60 hover:text-white'
+                        }`}
                     >
                       අනුමත (Approved)
                     </button>
@@ -412,8 +408,8 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                       </thead>
                       <tbody className="divide-y divide-white/5 text-sm">
                         {filteredLanterns.map((lantern) => (
-                          <tr 
-                            key={lantern._id} 
+                          <tr
+                            key={lantern._id}
                             className="hover:bg-white/2 transition-colors cursor-pointer group"
                             onClick={() => setSelectedLantern(lantern)}
                           >
@@ -459,7 +455,7 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                                 >
                                   <Eye className="w-4 h-4" />
                                 </button>
-                                
+
                                 {!lantern.isApproved && (
                                   <button
                                     onClick={() => handleApprove(lantern._id)}
@@ -499,8 +495,8 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                   {/* Mobile Cards List View */}
                   <div className="block md:hidden space-y-4">
                     {filteredLanterns.map((lantern) => (
-                      <div 
-                        key={lantern._id} 
+                      <div
+                        key={lantern._id}
                         className="bg-black/40 border border-white/5 rounded-2xl p-5 flex flex-col gap-4 relative overflow-hidden cursor-pointer"
                         onClick={() => setSelectedLantern(lantern)}
                       >
@@ -552,7 +548,7 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                           >
                             <Eye className="w-4 h-4" />
                           </button>
-                          
+
                           {!lantern.isApproved && (
                             <button
                               onClick={() => handleApprove(lantern._id)}
@@ -616,20 +612,29 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-                      
+
                       {/* Left: Video & Details */}
                       <div className="space-y-4 flex flex-col justify-between">
                         <div className="space-y-4">
                           {/* Youtube/Video Embed */}
                           <div className="aspect-video w-full bg-black rounded-xl overflow-hidden border border-[#D4AF37]/20 relative shadow-inner">
-                            {selectedLantern.videoUrl ? (
-                              <iframe
-                                src={selectedLantern.videoUrl}
-                                title={selectedLantern.title}
-                                className="w-full h-full absolute top-0 left-0"
-                                allowFullScreen
-                              />
-                            ) : (
+                            {selectedLantern.videoUrl ? (() => {
+                              const ytId = getYoutubeId(selectedLantern.videoUrl);
+                              const ttId = getTikTokId(selectedLantern.videoUrl);
+                              const adminEmbedUrl = ytId
+                                ? `https://www.youtube.com/embed/${ytId}`
+                                : ttId
+                                  ? `https://www.tiktok.com/embed/v2/${ttId}`
+                                  : selectedLantern.videoUrl;
+                              return (
+                                <iframe
+                                  src={adminEmbedUrl}
+                                  title={selectedLantern.title}
+                                  className="w-full h-full absolute top-0 left-0"
+                                  allowFullScreen
+                                />
+                              );
+                            })() : (
                               <div className="w-full h-full flex flex-col items-center justify-center text-[#F5F5F7]/30">
                                 <XCircle className="w-8 h-8 mb-2" />
                                 <span>වීඩියෝවක් නොමැත</span>
@@ -700,7 +705,7 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                             )}
                           </div>
 
-                           <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
+                          <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
                             {!selectedLantern.isApproved ? (
                               <button
                                 onClick={() => handleApprove(selectedLantern._id)}
@@ -752,7 +757,7 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
                           </div>
 
                           {selectedLantern.receiptImage ? (
-                            <div 
+                            <div
                               onClick={() => setZoomReceipt(true)}
                               className="w-full flex-grow rounded-lg overflow-hidden border border-white/10 relative bg-black flex items-center justify-center cursor-zoom-in"
                             >
@@ -785,7 +790,7 @@ export default function AdminClient({ initialIsAuthenticated }: { initialIsAuthe
             {/* 4. Zoom Receipt Lightbox Overlay */}
             <AnimatePresence>
               {zoomReceipt && selectedLantern && (
-                <div 
+                <div
                   onClick={() => setZoomReceipt(false)}
                   className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 cursor-zoom-out"
                 >

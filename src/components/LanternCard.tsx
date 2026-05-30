@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Flame, PlayCircle, Sparkles } from 'lucide-react';
 import { getYoutubeId } from '@/lib/youtube';
+import { getTikTokId } from '@/lib/tiktok';
 import YouTubePlayer from '@/components/YouTubePlayer';
+import TikTokEmbed from '@/components/TikTokEmbed';
 
 interface LanternCardProps {
   lantern: {
@@ -22,18 +24,22 @@ export default function LanternCard({ lantern }: LanternCardProps) {
   const [isPlayingInline, setIsPlayingInline] = useState(false);
 
   const ytId = getYoutubeId(lantern.videoUrl);
+  const ttId = getTikTokId(lantern.videoUrl);
   const thumbnailUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null;
-  const embedUrl = ytId ? `https://www.youtube.com/embed/${ytId}` : lantern.videoUrl;
+  const embedUrl = ytId
+    ? `https://www.youtube.com/embed/${ytId}`
+    : ttId
+      ? `https://www.tiktok.com/embed/v2/${ttId}`
+      : lantern.videoUrl;
 
   const mediaAspectRatio = 'aspect-video'; // Force uniform card sizes
 
   return (
     <motion.div
-      className={`bg-gradient-to-b from-[#110E14]/95 to-[#070509]/95 rounded-3xl overflow-hidden hover:border-[#D4AF37]/75 transition-all duration-500 group relative cursor-pointer flex flex-col h-full backdrop-blur-lg ${
-        lantern.isWinner 
-          ? 'border-2 border-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.25)] hover:shadow-[0_0_35px_rgba(255,215,0,0.4)]' 
+      className={`bg-gradient-to-b from-[#110E14]/95 to-[#070509]/95 rounded-3xl overflow-hidden hover:border-[#D4AF37]/75 transition-all duration-500 group relative cursor-pointer flex flex-col h-full backdrop-blur-lg ${lantern.isWinner
+          ? 'border-2 border-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.25)] hover:shadow-[0_0_35px_rgba(255,215,0,0.4)]'
           : 'border border-[#D4AF37]/20 hover:shadow-[0_0_30px_rgba(212,175,55,0.2)]'
-      }`}
+        }`}
       whileHover={{ y: -6 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -44,7 +50,7 @@ export default function LanternCard({ lantern }: LanternCardProps) {
     >
       {/* Immersive background glow in card */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#D4AF37]/0 via-[#D4AF37]/2 to-[#D4AF37]/8 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0" />
-      
+
       {/* Creative Golden Sweep Shine Effect */}
       <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-[#D4AF37]/15 to-transparent pointer-events-none z-10" />
 
@@ -59,13 +65,13 @@ export default function LanternCard({ lantern }: LanternCardProps) {
           />
         ) : thumbnailUrl ? (
           <>
-            <img 
-              src={thumbnailUrl} 
-              alt={lantern.title} 
+            <img
+              src={thumbnailUrl}
+              alt={lantern.title}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
             {/* Play Button Hover Overlay */}
-            <div 
+            <div
               className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
               onClick={(e) => {
                 e.stopPropagation(); // Stop click from opening the new window
@@ -80,15 +86,43 @@ export default function LanternCard({ lantern }: LanternCardProps) {
               </span>
             </div>
           </>
+        ) : ttId ? (
+          // TikTok: can't use a plain iframe (CSP-blocked). Show a branded
+          // placeholder; clicking opens the full detail page with the embed.js player.
+          <div className="w-full h-full absolute top-0 left-0 flex flex-col items-center justify-center bg-black gap-3">
+            {/* TikTok Logo SVG */}
+            <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M38.4 10.6A11.2 11.2 0 0 1 30.6 7v26.5a7.1 7.1 0 1 1-7.1-7.1c.4 0 .8 0 1.2.1V19a14.2 14.2 0 1 0 13.7 14.5V18.5a18.3 18.3 0 0 0 10.8 3.5V15a11.2 11.2 0 0 1-10.8-4.4z" fill="#fff" />
+            </svg>
+            <span className="text-white/80 text-xs font-semibold">TikTok Video</span>
+            <span className="text-[#FFD700] text-[10px] font-bold bg-black/60 px-3 py-1 rounded-full border border-[#D4AF37]/30">
+              විස්තර බලන්න (View Details)
+            </span>
+          </div>
         ) : (
-          <iframe
-            src={embedUrl}
-            title={lantern.title}
-            className="w-full h-full absolute top-0 left-0 pointer-events-none"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
+          // Generic/Facebook fallback: Render the iframe so the user sees the exact video preview/thumbnail.
+          // An invisible overlay intercepts clicks to navigate to the details page.
+          <div className="w-full h-full absolute top-0 left-0 relative">
+            <YouTubePlayer
+              videoId={null}
+              embedUrl={embedUrl}
+              title={lantern.title}
+              autoplay={false}
+            />
+            {/* Invisible overlay to capture clicks and route to details page */}
+            <div className="absolute inset-0 bg-transparent z-20 cursor-pointer"></div>
+            {/* Play Button Hover Overlay */}
+            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 pointer-events-none">
+              <div className="p-3 bg-black/60 rounded-full border border-[#D4AF37]/50">
+                <PlayCircle className="w-10 h-10 text-[#D4AF37]" />
+              </div>
+              <span className="text-[#FFD700] text-xs font-bold mt-2 gold-text-glow bg-black/60 px-3 py-1 rounded-full border border-white/5">
+                විස්තර බලන්න (View Details)
+              </span>
+            </div>
+          </div>
         )}
+
       </div>
 
       {/* Details Section */}
@@ -117,7 +151,7 @@ export default function LanternCard({ lantern }: LanternCardProps) {
             {lantern.description}
           </p>
         </div>
-        
+
         {/* Flame/Like counts footer */}
         <div className="flex justify-between items-center mt-2 pt-3 border-t border-white/5">
           <div className="flex items-center gap-2">
@@ -147,7 +181,7 @@ export default function LanternCard({ lantern }: LanternCardProps) {
               {lantern.likeCount} <span className="text-[#FFD700] text-xs font-serif font-semibold">පහන් (Lamps)</span>
             </span>
           </div>
-          
+
           <span className="text-xs text-[#D4AF37] font-semibold group-hover:underline transition-all">
             විස්තර බලන්න &rarr;
           </span>

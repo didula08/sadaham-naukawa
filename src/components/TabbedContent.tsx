@@ -70,7 +70,7 @@ export default function TabbedContent({ winner, lanterns }: { winner: any, lante
                   {/* Corner winner badge */}
                   <div className="absolute top-0 right-0 bg-gradient-to-l from-[#D4AF37] to-[#FFD700] text-black font-black px-6 py-2 rounded-bl-3xl shadow-lg flex items-center gap-1.5 text-xs md:text-sm uppercase tracking-wider">
                     <Trophy className="w-4 h-4 fill-black text-black" />
-                    <span>Winner - LKR 10,000</span>
+                    <span>Winner - LKR 5,000</span>
                   </div>
                   
                   {/* Winner Thumbnail/Video Link */}

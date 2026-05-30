@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion';
 import { Trophy, Flame, Sparkles } from 'lucide-react';
 import { getYoutubeId } from '@/lib/youtube';
+import { getTikTokId } from '@/lib/tiktok';
+import YouTubePlayer from '@/components/YouTubePlayer';
 
 interface LeaderboardSectionProps {
   topLanterns: Array<{
@@ -87,7 +89,13 @@ export default function LeaderboardSection({ topLanterns }: LeaderboardSectionPr
       <div className={`flex flex-col md:flex-row items-center md:items-stretch justify-center gap-8 md:gap-4 max-w-6xl mx-auto px-4 ${leaders.length === 3 ? 'md:px-0' : ''}`}>
         {podiumItems.map((item) => {
           const ytId = getYoutubeId(item.videoUrl);
+          const ttId = getTikTokId(item.videoUrl);
           const thumbnailUrl = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null;
+          const embedUrl = ytId
+            ? `https://www.youtube.com/embed/${ytId}`
+            : ttId
+              ? `https://www.tiktok.com/embed/v2/${ttId}`
+              : item.videoUrl;
 
           return (
             <motion.div
@@ -126,9 +134,30 @@ export default function LeaderboardSection({ topLanterns }: LeaderboardSectionPr
                       </div>
                     </div>
                   </>
+                ) : ttId ? (
+                  <div className="w-full h-full absolute top-0 left-0 flex flex-col items-center justify-center bg-black gap-3">
+                    <svg viewBox="0 0 48 48" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M38.4 10.6A11.2 11.2 0 0 1 30.6 7v26.5a7.1 7.1 0 1 1-7.1-7.1c.4 0 .8 0 1.2.1V19a14.2 14.2 0 1 0 13.7 14.5V18.5a18.3 18.3 0 0 0 10.8 3.5V15a11.2 11.2 0 0 1-10.8-4.4z" fill="#fff" />
+                    </svg>
+                    <span className="text-white/80 text-xs font-semibold">TikTok Video</span>
+                    <span className="text-[#FFD700] text-[10px] font-bold bg-black/60 px-3 py-1 rounded-full border border-[#D4AF37]/30">
+                      විස්තර බලන්න (View Details)
+                    </span>
+                  </div>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-[#D4AF37]/80 text-xs">
-                    නිර්මාණය නරඹන්න (View Video)
+                  <div className="w-full h-full absolute top-0 left-0 relative">
+                    <YouTubePlayer
+                      videoId={null}
+                      embedUrl={embedUrl}
+                      title={item.title}
+                      autoplay={false}
+                    />
+                    <div className="absolute inset-0 bg-transparent z-20 cursor-pointer"></div>
+                    <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30 pointer-events-none">
+                      <div className="p-3 bg-black/60 rounded-full border border-[#D4AF37]/50">
+                        <Flame className="w-8 h-8 text-[#FFD700] animate-pulse" />
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

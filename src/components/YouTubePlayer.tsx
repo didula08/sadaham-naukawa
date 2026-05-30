@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import TikTokEmbed from "@/components/TikTokEmbed";
+
+import { getTikTokId, isTikTokUrl } from "@/lib/tiktok";
+import { resolveTikTokShortUrl } from "@/actions/lanternActions";
 
 declare global {
   interface Window {
@@ -27,10 +31,33 @@ export default function YouTubePlayer({
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<any>(null);
 
+  // State to handle resolving shortened TikTok URLs on the fly
+  const [resolvedTikTokId, setResolvedTikTokId] = useState<string | null>(null);
+  const [isResolving, setIsResolving] = useState(false);
+
   useEffect(() => {
     // If not a YouTube video (e.g. TikTok, other formats), pause background music immediately on mount
     if (!videoId) {
       window.dispatchEvent(new Event("pause-bg-music"));
+      
+      // If it's a TikTok URL but we don't have the ID yet (e.g. short link like vt.tiktok.com)
+      // we need to resolve it on the server to get the full URL and extract the ID.
+      if (isTikTokUrl(embedUrl)) {
+        const initialId = getTikTokId(embedUrl);
+        if (initialId) {
+          setResolvedTikTokId(initialId);
+        } else {
+          setIsResolving(true);
+          resolveTikTokShortUrl(embedUrl).then((fullUrl) => {
+            const extractedId = getTikTokId(fullUrl);
+            if (extractedId) {
+              setResolvedTikTokId(extractedId);
+            }
+            setIsResolving(false);
+          });
+        }
+      }
+
       return () => {
         window.dispatchEvent(new Event("play-bg-music"));
       };
@@ -75,6 +102,8 @@ export default function YouTubePlayer({
           autoplay: autoplay ? 1 : 0,
           rel: 0,
           enablejsapi: 1,
+          vq: 'hd1080',
+          modestbranding: 1,
         },
         events: {
           onStateChange: (event: any) => {
@@ -117,13 +146,43 @@ export default function YouTubePlayer({
     };
   }, [videoId, autoplay]);
 
-  // Fallback for non-YouTube videos (e.g. TikTok, other URLs)
+  // Fallback for non-YouTube videos
   if (!videoId) {
+    if (resolvedTikTokId) {
+      return <TikTokEmbed videoId={resolvedTikTokId} className={className} />;
+    }
+
+    if (isTikTokUrl(embedUrl)) {
+      if (isResolving) {
+        return (
+          <div className={`flex flex-col items-center justify-center bg-black/90 text-white p-6 text-center border border-white/10 rounded-xl ${className}`}>
+             <div className="w-12 h-12 mb-4 border-4 border-[#00f2fe] border-t-[#fe2c55] rounded-full animate-spin"></div>
+             <p className="text-sm text-gray-300 font-semibold animate-pulse">Loading TikTok Video...</p>
+          </div>
+        );
+      }
+
+      // If it's a TikTok URL but we couldn't extract an ID even after resolving, show fallback button
+      return (
+        <div className={`flex flex-col items-center justify-center bg-black/90 text-white p-6 text-center border border-white/10 rounded-xl ${className}`}>
+          <div className="w-12 h-12 mb-3 bg-black rounded-xl border border-white/20 flex items-center justify-center overflow-hidden">
+             <span className="text-xl font-bold text-white drop-shadow-[2px_2px_0px_#00f2fe] [-webkit-text-stroke:1px_#fe2c55]">d</span>
+          </div>
+          <p className="text-sm text-gray-300 mb-4 font-semibold">Cannot preview this TikTok link format directly.</p>
+          <a href={embedUrl} target="_blank" rel="noopener noreferrer" className="bg-[#fe2c55] hover:bg-[#e0264b] text-white px-6 py-2.5 rounded-full font-bold transition-colors shadow-lg hover:shadow-[#fe2c55]/50 flex items-center gap-2 text-sm">
+            Watch on TikTok &rarr;
+          </a>
+        </div>
+      );
+    }
+
+    // Generic iframe fallback for any other non-YouTube URL
     return (
       <iframe
         src={`${embedUrl}${embedUrl.includes("?") ? "&" : "?"}autoplay=${autoplay ? 1 : 0}&rel=0`}
         title={title}
         className={className}
+        style={{ border: 'none', background: '#000' }}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
       ></iframe>

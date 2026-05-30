@@ -8,6 +8,17 @@ import xss from 'xss';
 import connectToDatabase from '@/lib/mongodb';
 import { Lantern } from '@/models/Lantern';
 import { Like } from '@/models/Like';
+import { getTikTokId } from '@/lib/tiktok';
+import { getFacebookEmbedUrl, resolveFacebookShareUrl } from '@/lib/facebook';
+
+export async function resolveTikTokShortUrl(url: string): Promise<string> {
+  try {
+    const res = await fetch(url, { method: 'HEAD', redirect: 'follow' });
+    return res.url;
+  } catch (e) {
+    return url;
+  }
+}
 
 export async function addLantern(formData: FormData) {
   try {
@@ -62,21 +73,33 @@ export async function addLantern(formData: FormData) {
       const hostname = parsedUrl.hostname.toLowerCase();
       const allowedDomains = [
         'youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be',
-        'tiktok.com', 'www.tiktok.com', 'vm.tiktok.com', 'vt.tiktok.com', 'm.tiktok.com'
+        'tiktok.com', 'www.tiktok.com', 'vm.tiktok.com', 'vt.tiktok.com', 'm.tiktok.com',
+        'facebook.com', 'www.facebook.com', 'm.facebook.com', 'fb.watch', 'fb.video'
       ];
       const isAllowedDomain = allowedDomains.some(domain => hostname === domain || hostname.endsWith('.' + domain));
       
       if (!isAllowedDomain) {
-        return { error: 'යූටියුබ් හෝ ටික්ටොක් සබැඳියක් පමණක් ඇතුළත් කරන්න (Please enter only YouTube or TikTok video links)' };
+        return { error: 'යූටියුබ්, ටික්ටොක් හෝ ෆේස්බුක් සබැඳියක් පමණක් ඇතුළත් කරන්න (Please enter only YouTube, TikTok, or Facebook video links)' };
       }
     } catch (_) {
       return { error: 'වලංගු වීඩියෝ සබැඳියක් ඇතුළත් කරන්න (Invalid video URL)' };
     }
 
-    // YouTube embedding extraction
+    // YouTube/TikTok/Facebook embedding extraction
     const ytMatch = sanitizedVideoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/);
     if (ytMatch && ytMatch[1]) {
       sanitizedVideoUrl = `https://www.youtube.com/embed/${ytMatch[1]}`;
+    } else {
+      const ttId = getTikTokId(sanitizedVideoUrl);
+      if (ttId) {
+        sanitizedVideoUrl = `https://www.tiktok.com/embed/v2/${ttId}`;
+      } else {
+        const resolvedFbUrl = await resolveFacebookShareUrl(sanitizedVideoUrl);
+        const fbEmbedUrl = getFacebookEmbedUrl(resolvedFbUrl);
+        if (fbEmbedUrl) {
+          sanitizedVideoUrl = fbEmbedUrl;
+        }
+      }
     }
 
     // Sanitize user inputs using xss to prevent Stored XSS

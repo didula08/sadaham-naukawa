@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Share2, ArrowLeft, Check, Sparkles, ChevronLeft, ChevronRight, Trophy } from 'lucide-react';
 import { likeLantern } from '@/actions/lanternActions';
 import { getYoutubeId } from '@/lib/youtube';
+import { getTikTokId } from '@/lib/tiktok';
 import YouTubePlayer from '@/components/YouTubePlayer';
 
 interface LanternDetailsClientProps {
@@ -54,7 +55,7 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
     if (isLit || isLiking) return;
     setIsLiking(true);
     setError('');
-    
+
     try {
       const result = await likeLantern(lantern._id);
       if (result.error) {
@@ -85,13 +86,18 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
   };
 
   const ytId = getYoutubeId(lantern.videoUrl);
-  const embedUrl = ytId ? `https://www.youtube.com/embed/${ytId}` : lantern.videoUrl;
+  const ttId = getTikTokId(lantern.videoUrl);
+  const embedUrl = ytId
+    ? `https://www.youtube.com/embed/${ytId}`
+    : ttId
+      ? `https://www.tiktok.com/embed/v2/${ttId}`
+      : lantern.videoUrl;
 
-  const isShorts = lantern.videoUrl.includes('shorts') || lantern.videoUrl.includes('/shorts/');
-  
+  const isShorts = lantern.videoUrl.includes('shorts') || lantern.videoUrl.includes('/shorts/') || !!ttId;
+
   return (
     <div className="min-h-screen bg-[#060507] text-white overflow-y-auto md:h-screen md:overflow-hidden relative flex flex-col justify-between pb-2">
-      
+
       {/* Dynamic Embedded CSS Styles */}
       <style jsx global>{`
         @keyframes floatUp {
@@ -150,10 +156,10 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         {/* Sky gradient background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#150a21] via-[#07050a] to-[#040305]" />
-        
+
         {/* Soft center lighting glow */}
         <div className="absolute top-[30%] left-[50%] -translate-x-[50%] w-[80%] h-[50%] bg-[#ff7b00]/5 blur-[160px] rounded-full" />
-        
+
         {/* Drifting Lanterns */}
         {lanternsList.map((l) => (
           <div
@@ -174,7 +180,7 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
 
       {/* Main Container */}
       <div className="w-full max-w-[92%] mx-auto px-4 py-3 relative z-10 flex-grow flex flex-col justify-center overflow-visible md:overflow-hidden">
-        
+
         {/* Header Navigation */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mb-3 flex-shrink-0">
           <button
@@ -219,7 +225,7 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
               </div>
             )}
           </div>
-          
+
           <button
             onClick={handleCopyLink}
             className="px-4 py-2 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/35 hover:bg-[#D4AF37]/20 text-[#FFD700] transition-all flex items-center gap-2 group text-sm backdrop-blur-md w-full sm:w-auto justify-center"
@@ -240,13 +246,18 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
 
         {/* Dynamic Layout - 50/50 Split on Desktop */}
         <div className="flex flex-col md:flex-row gap-6 lg:gap-8 mt-2 items-center md:items-stretch justify-center flex-grow overflow-visible md:overflow-hidden md:max-h-[calc(100vh-140px)]">
-          
+
           {/* VIDEO BOX (Left/Top) - Takes half the screen width */}
-          <div className="w-full md:w-1/2 flex justify-center items-center h-auto md:h-full overflow-visible md:overflow-hidden">
-            <div 
-              className={`bg-black/40 rounded-3xl overflow-hidden border border-[#D4AF37]/30 shadow-2xl relative ${
-                isShorts ? 'h-[50vh] md:h-full max-h-[500px] md:max-h-[calc(100vh-210px)] aspect-[9/16] shadow-[#D4AF37]/5' : 'w-full aspect-video shadow-[#D4AF37]/10'
-              } backdrop-blur-sm`}
+          <div className="w-full md:w-1/2 flex justify-center items-center h-auto md:h-full overflow-visible md:overflow-hidden relative group">
+            
+            {/* Cinematic Glow Effect Behind Video */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#D4AF37]/20 via-[#FF6A00]/10 to-[#D4AF37]/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-700 opacity-60"></div>
+            
+            {/* Main Video Container */}
+            <div
+              className={`bg-black rounded-3xl overflow-hidden border-2 border-[#D4AF37]/40 shadow-[0_0_40px_rgba(212,175,55,0.15)] group-hover:shadow-[0_0_60px_rgba(212,175,55,0.25)] transition-shadow duration-500 relative z-10 ${
+                isShorts ? 'h-[50vh] md:h-full max-h-[500px] md:max-h-[calc(100vh-210px)] aspect-[9/16]' : 'w-full aspect-video'
+              }`}
             >
               <YouTubePlayer
                 videoId={ytId}
@@ -259,16 +270,16 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
 
           {/* INFORMATION & INTERACTION PANEL (Right/Bottom) - Takes other half the screen width */}
           <div className="w-full md:w-1/2 flex flex-col justify-start md:justify-center gap-4 h-auto md:h-full md:overflow-y-auto pr-0 md:pr-2 pb-6 md:pb-0">
-            
+
             {/* Title & Info Card */}
             <div className="bg-black/40 border border-white/5 rounded-3xl p-5 lg:p-6 backdrop-blur-md relative overflow-hidden flex-shrink-0">
               {/* Gold Top Border line */}
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
-              
+
               {lantern.isWinner ? (
                 <div className="flex items-center gap-2 text-sm lg:text-base text-[#FFD700] bg-[#D4AF37]/15 border border-[#D4AF37]/45 rounded-xl px-4 py-2 mb-4 font-black uppercase tracking-wider shadow-[0_0_15px_rgba(212,175,55,0.2)] animate-pulse w-fit">
                   <Trophy className="w-4 h-4 text-[#FFD700] animate-bounce" />
-                  <span>🏆 තරඟයේ ජයග්‍රාහකයා (Winner - LKR 10,000)</span>
+                  <span>🏆 තරඟයේ ජයග්‍රාහකයා (Winner - LKR 5,000)</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-base lg:text-lg text-[#FFD700] uppercase tracking-wider mb-3 font-black">
@@ -276,11 +287,11 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
                   <span>වෙසක් නිර්මාණය (Vesak Creation)</span>
                 </div>
               )}
-              
+
               <h1 className="text-4xl lg:text-5xl font-black text-[#FFD700] gold-text-glow leading-tight mb-4">
                 {lantern.title}
               </h1>
-              
+
               <div className="flex items-center gap-4 py-3 border-y border-[#D4AF37]/30 mb-5">
                 <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] flex items-center justify-center text-black font-black text-2xl shadow-lg shadow-[#D4AF37]/35 flex-shrink-0">
                   {lantern.creatorName.charAt(0).toUpperCase()}
@@ -301,10 +312,10 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
 
             {/* Clay Oil Lamp (පහන) Altar Area */}
             <div className="bg-gradient-to-b from-[#18111a]/40 to-[#0e0a12]/60 border border-[#D4AF37]/20 rounded-3xl p-5 lg:p-6 backdrop-blur-md flex flex-col items-center justify-center relative overflow-hidden text-center flex-shrink-0">
-              
+
               {/* Lamp Altar Shelf Design (Visual) */}
               <div className="absolute bottom-[75px] w-[80%] h-[3px] bg-gradient-to-r from-transparent via-[#D4AF37]/40 to-transparent" />
-              
+
               {/* Animated Light Ripples when Lit */}
               {isLit && (
                 <>
@@ -318,19 +329,19 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
                 <svg viewBox="0 0 100 65" className="w-28 h-28 select-none filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
                   {/* Oil Lamp Shadow */}
                   <ellipse cx="50" cy="54" rx="42" ry="7" fill="black" opacity="0.4" />
-                  
+
                   {/* Clay Pot Base */}
                   <path d="M 12 38 C 12 55, 88 55, 88 38 C 88 28, 73 28, 50 33 C 27 28, 12 28, 12 38 Z" fill="#8B4513" stroke="#5C2E0B" strokeWidth="2.5" />
-                  
+
                   {/* Clay Pot Trim detail */}
                   <path d="M 22 36 C 32 31, 68 31, 78 36" fill="none" stroke="#6b350f" strokeWidth="1.5" />
-                  
+
                   {/* Coconut/Mustard Oil */}
                   <ellipse cx="50" cy="34" rx="32" ry="4" fill="#cf9613" />
-                  
+
                   {/* Cotton Wick */}
                   <path d="M 50 34 Q 50 22, 50 20" fill="none" stroke="#2b2622" strokeWidth="4.5" strokeLinecap="round" />
-                  
+
                   {/* FLAME (Only rendered/animated if lamp is lit) */}
                   {isLit && (
                     <g className="flame-group">
@@ -343,11 +354,11 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
                     </g>
                   )}
                 </svg>
-                
+
                 {/* Floating Spars / Blessings Burst when user lights it */}
                 <AnimatePresence>
                   {showSparkle && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, scale: 0.5 }}
                       animate={{ opacity: 1, scale: 1.5 }}
                       exit={{ opacity: 0 }}
@@ -365,22 +376,21 @@ export default function LanternDetailsClient({ lantern, prevLantern, nextLantern
                   <Heart className="w-6 h-6 fill-[#FFD700] text-[#FFD700] inline" />
                   {likeCount} පහන් දල්වා ඇත (Lamps Lit)
                 </p>
-                
+
                 {error && <p className="text-red-400 text-xs mt-2">{error}</p>}
-                
+
                 <button
                   onClick={handleLightLamp}
                   disabled={isLit || isLiking}
-                  className={`mt-4 px-6 py-3 rounded-xl font-bold transition-all ${
-                    isLit 
+                  className={`mt-4 px-6 py-3 rounded-xl font-bold transition-all ${isLit
                       ? 'bg-gradient-to-r from-[#D4AF37]/10 to-[#FFD700]/10 border border-[#D4AF37]/30 text-[#FFD700]/70 cursor-default'
                       : 'bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black hover:shadow-[0_0_20px_rgba(255,215,0,0.6)]'
-                  } disabled:opacity-80`}
+                    } disabled:opacity-80`}
                 >
-                  {isLit 
-                    ? 'ඔබ පහනක් දල්වා ඇත (You Lit a Lamp)' 
-                    : isLiking 
-                      ? 'පහන දල්වමින්...' 
+                  {isLit
+                    ? 'ඔබ පහනක් දල්වා ඇත (You Lit a Lamp)'
+                    : isLiking
+                      ? 'පහන දල්වමින්...'
                       : 'පහනක් දල්වන්න (Light a Lamp)'}
                 </button>
               </div>
